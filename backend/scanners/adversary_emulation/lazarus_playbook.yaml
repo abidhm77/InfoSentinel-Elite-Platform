@@ -1,0 +1,37 @@
+---
+id: LAZARUS-EMULATION
+name: "Lazarus Group Playbook"
+tactics:
+  - TA0001: Initial Access
+  - TA0040: Impact
+
+techniques:
+  - technique: T1195.002
+    name: "Compromise Software Supply Chain"
+    atomic_tests:
+      - name: "Malicious Installer Modification"
+        command: |
+          python3 scripts/modify_installer.py -i legitimate_setup.exe -o backdoored_setup.exe
+        cleanup: |
+          rm backdoored_setup.exe
+
+  - technique: T1486
+    name: "Data Encrypted for Impact"
+    atomic_tests:
+      - name: "Mock Ransomware Encryption"
+        command: |
+          python3 scripts/fake_ransomware.py --target-dir ./test_files
+        cleanup: |
+          python3 scripts/fake_ransomware.py --decrypt
+
+  - technique: T1561.002
+    name: "Disk Wipe"
+    atomic_tests:
+      - name: "Secure Delete Temporary Files"
+        command: |
+          sdelete /s /q C:\Windows\Temp\*.*
+        detectors:
+          - sigma: /detection/endpoint/disk_wipe.yaml
+
+mitre_mobile_layer: "mobile-attack-11.3"
+stix_bundle_id: "bundle--5f9a8e1a-3b47-4a89-a4d2-6b1c7e8d9f0e"

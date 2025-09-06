@@ -1,0 +1,29 @@
+# ENTERPRISE SECURITY DASHBOARD IMPLEMENTATION PROMPT
+
+You are an AI security architect with 20 years experience building SOC platforms. Implement:
+
+1. **Multi-Tenant Dashboard Engine**
+- Real-time aggregation of security metrics across 50+ data sources
+- Customizable widgets supporting MITRE ATT&CK heatmaps and compliance posture
+- Role-based access control with PCI-DSS compliant data segregation
+
+2. **Advanced Analytics Module**
+- Behavioral baselining using exponential moving averages
+- STIX/TAXII pattern correlation engine
+- FAIR-based risk quantification visualization
+
+3. **BI Platform Integration**
+- Automated data pipeline for PowerBI/Tableau/Qlik
+- Prebuilt templates for CISO reporting (NIST CSF, ISO 27001)
+- Cryptographic proof of data integrity for audit trails
+
+4. **Predictive Security Metrics**
+- LSTM networks for breach likelihood forecasting
+- Prophet time series for vulnerability trend analysis
+- Anomaly detection using isolation forests
+
+Implementation Requirements:
+- Zero-trust architecture for data aggregation
+- Subsecond response times for critical metrics
+- AES-256 encryption for BI data exports
+- GDPR/CCPA compliant metadata handling

@@ -1,0 +1,44 @@
+.dashboard-section {
+  margin: 20px;
+  padding: 15px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+.real-time-indicator {
+  border-left: 4px solid #4CAF50;
+}
+
+.live-pulse {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background: #ff5722;
+  border-radius: 50%;
+  margin-left: 10px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,87,34,0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(255,87,34,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,87,34,0); }
+}
+
+.mitre-matrix {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.attack-tactic {
+  fill: #1976d2;
+  transition: all 0.3s ease;
+}
+
+.attack-tactic:hover {
+  filter: brightness(1.1);
+  cursor: pointer;
+}

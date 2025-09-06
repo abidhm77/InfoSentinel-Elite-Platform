@@ -1,0 +1,900 @@
+/* InfoSentinel Revolutionary Cyberpunk Design System */
+/* The most advanced cybersecurity interface design language ever created */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* === CYBERPUNK COLOR PALETTE === */
+  /* Primary Colors - Electric & Neon */
+  --cyber-blue: #00F5FF;
+  --matrix-green: #39FF14;
+  --neon-purple: #9D00FF;
+  --electric-pink: #FF10F0;
+  --quantum-orange: #FF6B35;
+  
+  /* Status Colors - Threat Level Indicators */
+  --critical-red: #FF073A;
+  --high-orange: #FF8C00;
+  --medium-yellow: #FFD700;
+  --low-blue: #4A90E2;
+  --info-gray: #8E8E93;
+  --success-green: #32D74B;
+  
+  /* Background Colors - Deep Space Gradient */
+  --bg-primary: #0A0A0B;
+  --bg-secondary: #1C1C1E;
+  --bg-tertiary: #2C2C2E;
+  --bg-quaternary: #3A3A3C;
+  --bg-glass: rgba(255, 255, 255, 0.1);
+  --bg-glass-strong: rgba(255, 255, 255, 0.15);
+  --bg-glass-subtle: rgba(255, 255, 255, 0.05);
+  
+  /* Text Colors - Hierarchy */
+  --text-primary: #FFFFFF;
+  --text-secondary: #ADADB8;
+  --text-tertiary: #8E8E93;
+  --text-accent: #00F5FF;
+  --text-success: #32D74B;
+  --text-warning: #FFD700;
+  --text-danger: #FF073A;
+  
+  /* Glow Effects - Signature Cyberpunk Look */
+  --glow-cyber-blue: 0 0 20px rgba(0, 245, 255, 0.5);
+  --glow-matrix-green: 0 0 20px rgba(57, 255, 20, 0.5);
+  --glow-neon-purple: 0 0 20px rgba(157, 0, 255, 0.5);
+  --glow-critical: 0 0 20px rgba(255, 7, 58, 0.5);
+  --glow-subtle: 0 0 10px rgba(0, 245, 255, 0.2);
+  
+  /* Border Gradients */
+  --border-cyber: linear-gradient(45deg, var(--cyber-blue), var(--neon-purple));
+  --border-matrix: linear-gradient(45deg, var(--matrix-green), var(--cyber-blue));
+  --border-threat: linear-gradient(45deg, var(--critical-red), var(--high-orange));
+  
+  /* Glass Morphism */
+  --glass-backdrop: blur(20px);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  /* === SPACING SYSTEM === */
+  --space-xs: 0.25rem;   /* 4px */
+  --space-sm: 0.5rem;    /* 8px */
+  --space-md: 1rem;      /* 16px */
+  --space-lg: 1.5rem;    /* 24px */
+  --space-xl: 2rem;      /* 32px */
+  --space-2xl: 3rem;     /* 48px */
+  --space-3xl: 4rem;     /* 64px */
+  
+  /* === BORDER RADIUS === */
+  --radius-sm: 0.25rem;   /* 4px */
+  --radius-md: 0.5rem;    /* 8px */
+  --radius-lg: 0.75rem;   /* 12px */
+  --radius-xl: 1rem;      /* 16px */
+  --radius-2xl: 1.5rem;   /* 24px */
+  --radius-full: 9999px;
+  
+  /* === SHADOWS === */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 20px rgba(0, 212, 255, 0.3);
+  --shadow-glow-green: 0 0 20px rgba(0, 255, 136, 0.3);
+  --shadow-glow-red: 0 0 20px rgba(255, 51, 102, 0.3);
+  
+  /* === TYPOGRAPHY === */
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  /* Font Sizes */
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.125rem;    /* 18px */
+  --text-xl: 1.25rem;     /* 20px */
+  --text-2xl: 1.5rem;     /* 24px */
+  --text-3xl: 1.875rem;   /* 30px */
+  --text-4xl: 2.25rem;    /* 36px */
+  --text-5xl: 3rem;       /* 48px */
+  
+  /* Font Weights */
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  
+  /* Line Heights */
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+  
+  /* === TRANSITIONS === */
+  --transition-fast: 0.15s ease-out;
+  --transition-normal: 0.3s ease-out;
+  --transition-slow: 0.5s ease-out;
+  --transition-bounce: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* === Z-INDEX SCALE === */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+}
+
+/* ==========================================================================
+   RESET & BASE STYLES
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  height: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: var(--text-base) !important;
+  line-height: var(--leading-normal) !important;
+  color: var(--text-primary) !important;
+  background: linear-gradient(135deg, 
+    var(--bg-primary) 0%, 
+    #0D1117 25%, 
+    #161B22 50%, 
+    var(--bg-secondary) 75%, 
+    var(--bg-primary) 100%) !important;
+  min-height: 100vh !important;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
+   LAYOUT COMPONENTS
+   ========================================================================== */
+
+/* Container */
+.cyber-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .cyber-container {
+    padding: 0 var(--space-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .cyber-container {
+    padding: 0 var(--space-xl);
+  }
+}
+
+/* Grid System */
+.cyber-grid {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.cyber-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.cyber-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.cyber-grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 768px) {
+  .cyber-grid-2,
+  .cyber-grid-3,
+  .cyber-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Flexbox Utilities */
+.cyber-flex {
+  display: flex;
+}
+
+.cyber-flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.cyber-items-center {
+  align-items: center;
+}
+
+.cyber-justify-center {
+  justify-content: center;
+}
+
+.cyber-justify-between {
+  justify-content: space-between;
+}
+
+.cyber-gap-sm { gap: var(--space-sm); }
+.cyber-gap-md { gap: var(--space-md); }
+.cyber-gap-lg { gap: var(--space-lg); }
+
+/* ==========================================================================
+   ADVANCED CYBERPUNK COMPONENTS
+   ========================================================================== */
+
+/* Glass Morphism Effects */
+.glass {
+  background: var(--bg-glass);
+  backdrop-filter: var(--glass-backdrop);
+  border: var(--glass-border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-normal);
+}
+
+.glass:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(0, 245, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Glow Effects */
+.glow-cyber {
+  box-shadow: var(--glow-cyber-blue);
+}
+
+.glow-matrix {
+  box-shadow: var(--glow-matrix-green);
+}
+
+.glow-purple {
+  box-shadow: var(--glow-neon-purple);
+}
+
+.glow-critical {
+  box-shadow: var(--glow-critical);
+}
+
+.glow-hover:hover {
+  box-shadow: var(--glow-cyber-blue);
+  transition: box-shadow var(--transition-normal);
+}
+
+/* Cyberpunk Card System */
+.cyber-card {
+  background: var(--bg-glass) !important;
+  backdrop-filter: var(--glass-backdrop) !important;
+  border: 1px solid rgba(0, 245, 255, 0.3) !important;
+  border-radius: var(--radius-xl) !important;
+  padding: var(--space-lg) !important;
+  box-shadow: var(--glow-subtle) !important;
+  transition: all var(--transition-normal) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-cyber {
+  background: var(--bg-glass);
+  backdrop-filter: var(--glass-backdrop);
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  transition: all var(--transition-normal);
+}
+
+.card-cyber:hover {
+  border-color: var(--cyber-blue);
+  box-shadow: var(--glow-subtle);
+  transform: translateY(-4px);
+}
+
+.cyber-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyber-primary), transparent);
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.cyber-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl), var(--shadow-glow);
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.cyber-card:hover::before {
+  opacity: 1;
+}
+
+.cyber-card-header {
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cyber-card-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.cyber-card-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   BUTTON COMPONENTS
+   ========================================================================== */
+
+.cyber-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  text-decoration: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left var(--transition-normal);
+}
+
+.cyber-btn:hover::before {
+  left: 100%;
+}
+
+/* Cyberpunk Button System */
+.btn-cyber {
+  background: linear-gradient(45deg, var(--cyber-blue), var(--neon-purple));
+  color: var(--bg-primary);
+  font-weight: 600;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btn-cyber:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glow-cyber-blue), var(--shadow-lg);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-accent);
+  border: 1px solid var(--cyber-blue);
+  font-weight: 500;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.btn-ghost:hover {
+  background: rgba(0, 245, 255, 0.1);
+  box-shadow: var(--glow-subtle);
+}
+
+/* Primary Button */
+.cyber-btn-primary {
+  background: linear-gradient(45deg, var(--cyber-blue), var(--neon-purple)) !important;
+  color: var(--bg-primary) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  box-shadow: var(--glow-subtle) !important;
+}
+
+.cyber-btn-primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--glow-cyber-blue), var(--shadow-lg) !important;
+}
+
+/* Secondary Button */
+.cyber-btn-secondary {
+  background: transparent !important;
+  color: var(--text-accent) !important;
+  border: 1px solid var(--cyber-blue) !important;
+  font-weight: 500 !important;
+}
+
+.cyber-btn-secondary:hover {
+  background: rgba(0, 245, 255, 0.1) !important;
+  box-shadow: var(--glow-subtle) !important;
+}
+
+/* Danger Button */
+.cyber-btn-danger {
+  background: linear-gradient(135deg, var(--cyber-accent), #ff6b35);
+  color: var(--text-primary);
+}
+
+.cyber-btn-danger:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-red);
+}
+
+/* Ghost Button */
+.cyber-btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cyber-btn-ghost:hover {
+  background: var(--bg-glass-light);
+  color: var(--text-primary);
+  border-color: var(--cyber-primary);
+}
+
+/* Button Sizes */
+.cyber-btn-sm {
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--text-xs);
+}
+
+.cyber-btn-lg {
+  padding: var(--space-md) var(--space-xl);
+  font-size: var(--text-lg);
+}
+
+/* ==========================================================================
+   FORM COMPONENTS
+   ========================================================================== */
+
+.cyber-form-group {
+  margin-bottom: var(--space-lg);
+}
+
+.cyber-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.cyber-input {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+}
+
+.cyber-input:focus {
+  outline: none;
+  border-color: var(--cyber-primary);
+  box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+  background: var(--bg-secondary);
+}
+
+.cyber-input::placeholder {
+  color: var(--text-muted);
+}
+
+.cyber-select {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.cyber-select:focus {
+  outline: none;
+  border-color: var(--cyber-primary);
+  box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+}
+
+.cyber-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  resize: vertical;
+  transition: all var(--transition-normal);
+}
+
+.cyber-textarea:focus {
+  outline: none;
+  border-color: var(--cyber-primary);
+  box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+}
+
+/* ==========================================================================
+   STATUS & BADGE COMPONENTS
+   ========================================================================== */
+
+.cyber-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cyber-badge-critical {
+  background: rgba(255, 7, 58, 0.2);
+  color: var(--critical-red);
+  border: 1px solid var(--critical-red);
+  box-shadow: var(--glow-critical);
+}
+
+.cyber-badge-high {
+  background: rgba(255, 140, 0, 0.2);
+  color: var(--high-orange);
+  border: 1px solid var(--high-orange);
+}
+
+.cyber-badge-medium {
+  background: rgba(255, 215, 0, 0.2);
+  color: var(--medium-yellow);
+  border: 1px solid var(--medium-yellow);
+}
+
+.cyber-badge-low {
+  background: rgba(74, 144, 226, 0.2);
+  color: var(--low-blue);
+  border: 1px solid var(--low-blue);
+}
+
+.cyber-badge-secure {
+  background: rgba(50, 215, 75, 0.2);
+  color: var(--success-green);
+  border: 1px solid var(--success-green);
+  box-shadow: var(--glow-matrix-green);
+}
+
+/* Additional Cyberpunk Utilities */
+.bg-space-gradient {
+  background: linear-gradient(135deg, 
+    var(--bg-primary) 0%, 
+    #0D1117 25%, 
+    #161B22 50%, 
+    var(--bg-secondary) 75%, 
+    var(--bg-primary) 100%);
+}
+
+.bg-cyber-gradient {
+  background: linear-gradient(135deg, 
+    rgba(0, 245, 255, 0.1) 0%, 
+    rgba(157, 0, 255, 0.1) 50%, 
+    rgba(57, 255, 20, 0.1) 100%);
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', monospace !important;
+}
+
+.text-cyber {
+  color: var(--cyber-blue) !important;
+}
+
+.text-matrix {
+  color: var(--matrix-green) !important;
+}
+
+.text-neon {
+  color: var(--neon-purple) !important;
+}
+
+/* ==========================================================================
+   CYBERPUNK NAVIGATION SYSTEM
+   ========================================================================== */
+
+.cyber-nav {
+  background: var(--bg-glass) !important;
+  backdrop-filter: var(--glass-backdrop) !important;
+  border-bottom: 1px solid rgba(0, 245, 255, 0.2) !important;
+  padding: var(--space-md) 0 !important;
+  box-shadow: var(--glow-subtle) !important;
+}
+
+.cyber-nav-brand {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-weight: 700 !important;
+  font-size: var(--text-xl) !important;
+  background: linear-gradient(45deg, var(--cyber-blue), var(--matrix-green)) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+.cyber-nav-link {
+  color: var(--text-secondary) !important;
+  transition: all var(--transition-normal) !important;
+  padding: var(--space-sm) var(--space-md) !important;
+  border-radius: var(--radius-md) !important;
+  font-weight: 500 !important;
+}
+
+.cyber-nav-link:hover,
+.cyber-nav-link.active {
+  color: var(--cyber-blue) !important;
+  background: rgba(0, 245, 255, 0.1) !important;
+  box-shadow: var(--glow-subtle) !important;
+}
+
+/* Override any existing navigation styles */
+.app-header,
+.main-nav,
+.nav-item {
+  all: unset !important;
+}
+
+.cyber-nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cyber-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--cyber-primary);
+  text-decoration: none;
+}
+
+.cyber-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  list-style: none;
+}
+
+.cyber-nav-item {
+  position: relative;
+}
+
+.cyber-nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+}
+
+.cyber-nav-link:hover,
+.cyber-nav-link.active {
+  color: var(--cyber-primary);
+  background: rgba(0, 255, 136, 0.1);
+}
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+
+/* Text Colors */
+.cyber-text-primary { color: var(--text-primary); }
+.cyber-text-secondary { color: var(--text-secondary); }
+.cyber-text-muted { color: var(--text-muted); }
+.cyber-text-success { color: var(--success); }
+.cyber-text-error { color: var(--error); }
+.cyber-text-warning { color: var(--warning); }
+.cyber-text-info { color: var(--info); }
+
+/* Background Colors */
+.cyber-bg-primary { background: var(--bg-primary); }
+.cyber-bg-secondary { background: var(--bg-secondary); }
+.cyber-bg-tertiary { background: var(--bg-tertiary); }
+.cyber-bg-glass { background: var(--bg-glass); }
+
+/* Spacing */
+.cyber-p-sm { padding: var(--space-sm); }
+.cyber-p-md { padding: var(--space-md); }
+.cyber-p-lg { padding: var(--space-lg); }
+.cyber-p-xl { padding: var(--space-xl); }
+
+.cyber-m-sm { margin: var(--space-sm); }
+.cyber-m-md { margin: var(--space-md); }
+.cyber-m-lg { margin: var(--space-lg); }
+.cyber-m-xl { margin: var(--space-xl); }
+
+/* Border Radius */
+.cyber-rounded-sm { border-radius: var(--radius-sm); }
+.cyber-rounded-md { border-radius: var(--radius-md); }
+.cyber-rounded-lg { border-radius: var(--radius-lg); }
+.cyber-rounded-xl { border-radius: var(--radius-xl); }
+.cyber-rounded-full { border-radius: var(--radius-full); }
+
+/* Shadows */
+.cyber-shadow-sm { box-shadow: var(--shadow-sm); }
+.cyber-shadow-md { box-shadow: var(--shadow-md); }
+.cyber-shadow-lg { box-shadow: var(--shadow-lg); }
+.cyber-shadow-xl { box-shadow: var(--shadow-xl); }
+.cyber-shadow-glow { box-shadow: var(--shadow-glow); }
+
+/* ==========================================================================
+   ANIMATIONS
+   ========================================================================== */
+
+@keyframes cyber-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes cyber-glow {
+  0%, 100% { box-shadow: var(--shadow-glow); }
+  50% { box-shadow: var(--shadow-glow), 0 0 40px rgba(0, 212, 255, 0.5); }
+}
+
+@keyframes cyber-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cyber-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.cyber-animate-pulse {
+  animation: cyber-pulse 2s infinite;
+}
+
+.cyber-animate-glow {
+  animation: cyber-glow 3s infinite;
+}
+
+.cyber-animate-slide-up {
+  animation: cyber-slide-up 0.6s var(--transition-bounce);
+}
+
+.cyber-animate-slide-in {
+  animation: cyber-slide-in 0.6s var(--transition-bounce);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .cyber-container {
+    padding: 0 var(--space-sm);
+  }
+  
+  .cyber-card {
+    padding: var(--space-md);
+  }
+  
+  .cyber-nav-menu {
+    display: none;
+  }
+  
+  .cyber-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   DARK MODE ENHANCEMENTS
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+/* ==========================================================================
+   HIGH CONTRAST MODE
+   ========================================================================== */
+
+@media (prefers-contrast: high) {
+  :root {
+    --bg-glass: rgba(0, 0, 0, 0.9);
+    --text-secondary: #ffffff;
+    --text-muted: #cccccc;
+  }
+  
+  .cyber-card {
+    border: 2px solid var(--cyber-primary);
+  }
+  
+  .cyber-btn {
+    border: 2px solid currentColor;
+  }
+}
+
+/* ==========================================================================
+   PRINT STYLES
+   ========================================================================== */
+
+@media print {
+  .cyber-card {
+    background: white;
+    color: black;
+    border: 1px solid #ccc;
+    box-shadow: none;
+  }
+  
+  .cyber-btn {
+    background: white;
+    color: black;
+    border: 1px solid #ccc;
+  }
+}

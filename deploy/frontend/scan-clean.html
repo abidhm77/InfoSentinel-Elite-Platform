@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Scan | InfoSentinel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--gray);
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+        }
+        
+        .header {
+            background-color: white;
+            padding: 2rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: var(--gray);
+            font-size: 1rem;
+            max-width: 600px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 1rem 1.25rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0;
+            color: var(--dark);
+        }
+        
+        .card-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray);
+            margin-top: 0.25rem;
+        }
+        
+        .card-body {
+            padding: 1.25rem;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .form-control, .form-select {
+            border-radius: 0.375rem;
+            border: 1px solid #e2e8f0;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-text {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+            border-color: var(--primary-light);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .scan-type-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .scan-type-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .scan-type-card.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        
+        .scan-type-card .scan-type-icon {
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .scan-type-card.selected .scan-type-icon {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .scan-type-card .scan-type-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .scan-type-card .scan-type-description {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        
+        .feature-card {
+            padding: 1.5rem;
+            text-align: center;
+            height: 100%;
+        }
+        
+        .feature-icon {
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .feature-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-list {
+            text-align: left;
+            font-size: 0.875rem;
+            padding-left: 1.25rem;
+        }
+        
+        .feature-list li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .scan-history-table {
+            font-size: 0.875rem;
+        }
+        
+        .scan-history-table th {
+            font-weight: 600;
+            color: var(--gray);
+        }
+        
+        .badge-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+        }
+        
+        .badge-status.completed {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .badge-status.in-progress {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .badge-status.scheduled {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .badge-status.failed {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255,255,255,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: var(--dark);
+            font-size: 1rem;
+        }
+        
+        .scan-progress {
+            margin-top: 2rem;
+        }
+        
+        .scan-progress-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .scan-progress-icon {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-right: 1rem;
+            font-size: 1rem;
+        }
+        
+        .scan-progress-icon.pending {
+            background-color: var(--gray-light);
+            color: white;
+        }
+        
+        .scan-progress-icon.in-progress {
+            background-color: var(--primary);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        .scan-progress-icon.completed {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
+        .scan-progress-content {
+            flex: 1;
+        }
+        
+        .scan-progress-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .scan-progress-description {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        
+        .scan-progress-bar {
+            height: 0.5rem;
+            background-color: #e2e8f0;
+            border-radius: 1rem;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .scan-progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: 1rem;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading Professional Scan Interface</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <span class="text-primary">Info</span><span class="text-danger">Sentinel</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="scan-clean.html">Scans</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="reports.html">Reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="ai-pentest.html">AI Pentest</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="quantum-clean.html">Quantum</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title">Professional Security Scans</h1>
+                    <p class="page-subtitle">Configure and launch advanced security assessments with enterprise-grade tools</p>
+                </div>
+                <div>
+                    <button id="historyBtn" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-history me-1"></i> Scan History
+                    </button>
+                    <button id="newScanBtn" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> New Scan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mb-5">
+        <!-- New Scan Form -->
+        <div class="card" id="newScanCard">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="card-title">New Professional Scan</h2>
+                <div>
+                    <span class="badge bg-primary">Enterprise</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="scanForm">
+                    <!-- Step 1: Target Information -->
+                    <div class="scan-step" id="step1">
+                        <h3 class="h5 mb-3">Step 1: Target Information</h3>
+                        <div class="mb-3">
+                            <label for="targetUrl" class="form-label">Target URL or IP Address</label>
+                            <input type="text" class="form-control" id="targetUrl" placeholder="https://example.com or 192.168.1.1" required>
+                            <div class="form-text">Enter a full URL (including http:// or https://) or an IP address</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="scanName" class="form-label">Scan Name</label>
+                            <input type="text" class="form-control" id="scanName" placeholder="My Website Security Scan">
+                            <div class="form-text">Optional: Give your scan a descriptive name for easier reference</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Target Type</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="targetType" id="targetTypeWeb" value="web" checked>
+                                <label class="form-check-label" for="targetTypeWeb">
+                                    Web Application
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="targetType" id="targetTypeNetwork" value="network">
+                                <label class="form-check-label" for="targetTypeNetwork">
+                                    Network/Infrastructure
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="targetType" id="targetTypeCloud" value="cloud">
+                                <label class="form-check-label" for="targetTypeCloud">
+                                    Cloud Environment
+                                </label>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-primary" id="step1Next">Continue to Scan Type</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Scan Type -->
+                    <div class="scan-step" id="step2" style="display: none;">
+                        <h3 class="h5 mb-3">Step 2: Select Scan Type</h3>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="scan-type-card" data-scan-type="webapp">
+                                    <div class="scan-type-icon">
+                                        <i class="fas fa-spider"></i>
+                                    </div>
+                                    <h4 class="scan-type-title">Web Application Security Test</h4>
+                                    <p class="scan-type-description">Identifies OWASP Top 10 vulnerabilities, XSS, SQL injection, CSRF, and more</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="scan-type-card" data-scan-type="network">
+                                    <div class="scan-type-icon">
+                                        <i class="fas fa-network-wired"></i>
+                                    </div>
+                                    <h4 class="scan-type-title">Network Vulnerability Assessment</h4>
+                                    <p class="scan-type-description">Detects open ports, vulnerable services, and network security issues</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="scan-type-card" data-scan-type="port">
+                                    <div class="scan-type-icon">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                    <h4 class="scan-type-title">Advanced Port Scan & Service Enumeration</h4>
+                                    <p class="scan-type-description">Comprehensive port scanning with service fingerprinting and OS detection</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="scan-type-card" data-scan-type="owasp">
+                                    <div class="scan-type-icon">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <h4 class="scan-type-title">OWASP Top 10 Scan</h4>
+                                    <p class="scan-type-description">Focused assessment of the OWASP Top 10 web application security risks</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-primary" id="step2Back">Back</button>
+                            <button type="button" class="btn btn-primary" id="step2Next">Continue to Scan Options</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Scan Options -->
+                    <div class="scan-step" id="step3" style="display: none;">
+                        <h3 class="h5 mb-3">Step 3: Configure Scan Options</h3>
+                        
+                        <!-- Web Application Scan Options -->
+                        <div class="scan-options webapp-options">
+                            <div class="mb-3">
+                                <label class="form-label">OWASP Scan Options</label>
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="brokenAuth" checked>
+                                            <label class="form-check-label" for="brokenAuth">
+                                                Broken Authentication
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="injection" checked>
+                                            <label class="form-check-label" for="injection">
+                                                Injection Vulnerabilities
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="xss" checked>
+                                            <label class="form-check-label" for="xss">
+                                                Cross-Site Scripting (XSS)
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="csrf" checked>
+                                            <label class="form-check-label" for="csrf">
+                                                Cross-Site Request Forgery (CSRF)
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="securityMisconfig">
+                                            <label class="form-check-label" for="securityMisconfig">
+                                                Security Misconfiguration
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="sensitiveData">
+                                            <label class="form-check-label" for="sensitiveData">
+                                                Sensitive Data Exposure
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="crawlDepth" class="form-label">Crawl Depth</label>
+                                <select class="form-select" id="crawlDepth">
+                                    <option value="1">Shallow (1 level)</option>
+                                    <option value="3" selected>Standard (3 levels)</option>
+                                    <option value="5">Deep (5 levels)</option>
+                                    <option value="10">Comprehensive (10 levels)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Network Scan Options -->
+                        <div class="scan-options network-options" style="display: none;">
+                            <div class="mb-3">
+                                <label for="portRange" class="form-label">Port Range</label>
+                                <select class="form-select" id="portRange">
+                                    <option value="common">Common Ports (1-1024)</option>
+                                    <option value="all">All Ports (1-65535)</option>
+                                    <option value="web">Web Server Ports (80,443,8080,8443)</option>
+                                    <option value="service">Service Ports (20-25,53,110-143,389,636)</option>
+                                    <option value="custom">Custom Port Range</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 custom-port-range" style="display: none;">
+                                <label for="customPorts" class="form-label">Custom Port Range</label>
+                                <input type="text" class="form-control" id="customPorts" placeholder="e.g., 80,443,8000-8100">
+                                <div class="form-text">Enter individual ports separated by commas or ranges with a hyphen</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Advanced Options</label>
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="serviceDetection" checked>
+                                            <label class="form-check-label" for="serviceDetection">
+                                                Service Detection
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="osDetection">
+                                            <label class="form-check-label" for="osDetection">
+                                                OS Detection
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="scriptScan">
+                                            <label class="form-check-label" for="scriptScan">
+                                                Run Vulnerability Scripts
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="hostDiscovery" checked>
+                                            <label class="form-check-label" for="hostDiscovery">
+                                                Host Discovery
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="scanDepth" class="form-label">Scan Intensity</label>
+                            <select class="form-select" id="scanDepth">
+                                <option value="light">Light (Minimal Impact)</option>
+                                <option value="standard" selected>Standard (Balanced)</option>
+                                <option value="deep">Deep (Thorough)</option>
+                                <option value="aggressive">Aggressive (Maximum Coverage)</option>
+                            </select>
+                            <div class="form-text">Higher intensity scans are more thorough but may take longer and generate more traffic</div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-primary" id="step3Back">Back</button>
+                            <button type="button" class="btn btn-primary" id="step3Next">Continue to Report Options</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Report Options -->
+                    <div class="scan-step" id="step4" style="display: none;">
+                        <h3 class="h5 mb-3">Step 4: Report Options</h3>
+                        <div class="mb-3">
+                            <label for="reportType" class="form-label">Report Type</label>
+                            <select class="form-select" id="reportType">
+                                <option value="standard">Standard Technical Report</option>
+                                <option value="executive">Executive Summary</option>
+                                <option value="compliance">Compliance Report</option>
+                                <option value="comprehensive">Comprehensive (All Reports)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Report Delivery</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="emailReport" checked>
+                                <label class="form-check-label" for="emailReport">
+                                    Email Report When Complete
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="downloadReport" checked>
+                                <label class="form-check-label" for="downloadReport">
+                                    Download Report When Complete
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="storeReport" checked>
+                                <label class="form-check-label" for="storeReport">
+                                    Store Report in Dashboard
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reportFormat" class="form-label">Report Format</label>
+                            <select class="form-select" id="reportFormat">
+                                <option value="pdf">PDF</option>
+                                <option value="html">HTML</option>
+                                <option value="json">JSON</option>
+                                <option value="all">All Formats</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Schedule</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="schedule" id="scheduleNow" value="now" checked>
+                                <label class="form-check-label" for="scheduleNow">
+                                    Run Immediately
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="schedule" id="scheduleLater" value="later">
+                                <label class="form-check-label" for="scheduleLater">
+                                    Schedule for Later
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3 schedule-options" style="display: none;">
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label for="scheduleDate" class="form-label">Date</label>
+                                    <input type="date" class="form-control" id="scheduleDate">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="scheduleTime" class="form-label">Time</label>
+                                    <input type="time" class="form-control" id="scheduleTime">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-primary" id="step4Back">Back</button>
+                            <button type="submit" class="btn btn-primary" id="startScanBtn">
+                                <i class="fas fa-play me-1"></i> Start Scan
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Scan Progress -->
+        <div class="card" id="scanProgressCard" style="display: none;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="card-title">Scan in Progress</h2>
+                <div>
+                    <span class="badge bg-primary">Running</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h3 class="h5 mb-1" id="progressScanName">Web Application Security Test</h3>
+                        <p class="text-muted mb-0" id="progressTarget">https://example.com</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-danger" id="cancelScanBtn">
+                            <i class="fas fa-stop me-1"></i> Cancel Scan
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="progress mb-3">
+                    <div class="progress-bar" id="overallProgress" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                </div>
+                
+                <div class="scan-progress">
+                    <div class="scan-progress-step">
+                        <div class="scan-progress-icon completed">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="scan-progress-content">
+                            <div class="scan-progress-title">Initialization</div>
+                            <div class="scan-progress-description">Setting up scan environment and validating target</div>
+                            <div class="scan-progress-bar">
+                                <div class="scan-progress-bar-fill" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scan-progress-step">
+                        <div class="scan-progress-icon in-progress">
+                            <i class="fas fa-spinner"></i>
+                        </div>
+                        <div class="scan-progress-content">
+                            <div class="scan-progress-title">Discovery Phase</div>
+                            <div class="scan-progress-description">Crawling website and discovering assets</div>
+                            <div class="scan-progress-bar">
+                                <div class="scan-progress-bar-fill" style="width: 65%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scan-progress-step">
+                        <div class="scan-progress-icon pending">
+                            <i class="fas fa-hourglass"></i>
+                        </div>
+                        <div class="scan-progress-content">
+                            <div class="scan-progress-title">Vulnerability Testing</div>
+                            <div class="scan-progress-description">Testing for security vulnerabilities</div>
+                            <div class="scan-progress-bar">
+                                <div class="scan-progress-bar-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scan-progress-step">
+                        <div class="scan-progress-icon pending">
+                            <i class="fas fa-hourglass"></i>
+                        </div>
+                        <div class="scan-progress-content">
+                            <div class="scan-progress-title">Analysis & Reporting</div>
+                            <div class="scan-progress-description">Analyzing results and generating reports</div>
+                            <div class="scan-progress-bar">
+                                <div class="scan-progress-bar-fill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info mt-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <span id="scanStatusMessage">Discovery phase in progress. Found 28 pages and 5 forms so far.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scan History -->
+        <div class="card" id="scanHistoryCard" style="display: none;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="card-title">Scan History</h2>
+                <div>
+                    <button class="btn btn-sm btn-outline-primary" id="refreshHistoryBtn">
+                        <i class="fas fa-sync-alt me-1"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table scan-history-table">
+                        <thead>
+                            <tr>
+                                <th>Scan Name</th>
+                                <th>Target</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Findings</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Monthly Security Audit</td>
+                                <td>https://example.com</td>
+                                <td>Web Application</td>
+                                <td>2023-06-15 09:30</td>
+                                <td><span class="badge-status completed">Completed</span></td>
+                                <td>12 issues</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View Report</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Network Infrastructure Scan</td>
+                                <td>192.168.1.0/24</td>
+                                <td>Network</td>
+                                <td>2023-06-10 14:45</td>
+                                <td><span class="badge-status completed">Completed</span></td>
+                                <td>8 issues</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View Report</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>API Security Test</td>
+                                <td>https://api.example.com</td>
+                                <td>Web Application</td>
+                                <td>2023-06-05 11:15</td>
+                                <td><span class="badge-status completed">Completed</span></td>
+                                <td>5 issues</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View Report</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Quarterly Compliance Check</td>
+                                <td>https://example.com</td>
+                                <td>Compliance</td>
+                                <td>2023-06-01 08:00</td>
+                                <td><span class="badge-status scheduled">Scheduled</span></td>
+                                <td>-</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Professional Scanning Capabilities</h2>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card feature-card">
+                            <div class="feature-icon bg-primary">
+                                <i class="fas fa-spider"></i>
+                            </div>
+                            <h3 class="feature-title">Web Application Security</h3>
+                            <ul class="feature-list">
+                                <li>OWASP Top 10 vulnerability detection</li>
+                                <li>Cross-site scripting (XSS) identification</li>
+                                <li>SQL injection testing</li>
+                                <li>CSRF token validation</li>
+                                <li>Security header analysis</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card feature-card">
+                            <div class="feature-icon bg-success">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <h3 class="feature-title">Network Reconnaissance</h3>
+                            <ul class="feature-list">
+                                <li>Advanced port scanning techniques</li>
+                                <li>Service fingerprinting</li>
+                                <li>Operating system detection</li>
+                                <li>Network topology mapping</li>
+                                <li>Vulnerability correlation</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card feature-card">
+                            <div class="feature-icon bg-warning">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <h3 class="feature-title">Comprehensive Reporting</h3>
+                            <ul class="feature-list">
+                                <li>Executive summaries</li>
+                                <li>Technical vulnerability details</li>
+                                <li>Remediation recommendations</li>
+                                <li>Compliance mapping (GDPR, PCI DSS)</li>
+                                <li>Risk scoring and prioritization</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Cancel Scan Confirmation Modal -->
+    <div class="modal fade" id="cancelScanModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cancel Scan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to cancel the current scan? All progress will be lost.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Continue Scan</button>
+                    <button type="button" class="btn btn-danger" id="confirmCancelBtn">Yes, Cancel Scan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize loading animation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate loading
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                initializeInterface();
+            }, 1000);
+        });
+
+        // Initialize interface
+        function initializeInterface() {
+            // Add event listeners for navigation
+            document.getElementById('newScanBtn').addEventListener('click', showNewScanCard);
+            document.getElementById('historyBtn').addEventListener('click', showScanHistoryCard);
+            
+            // Add event listeners for form navigation
+            document.getElementById('step1Next').addEventListener('click', () => {
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step2').style.display = 'block';
+            });
+            
+            document.getElementById('step2Back').addEventListener('click', () => {
+                document.getElementById('step2').style.display = 'none';
+                document.getElementById('step1').style.display = 'block';
+            });
+            
+            document.getElementById('step2Next').addEventListener('click', () => {
+                document.getElementById('step2').style.display = 'none';
+                document.getElementById('step3').style.display = 'block';
+            });
+            
+            document.getElementById('step3Back').addEventListener('click', () => {
+                document.getElementById('step3').style.display = 'none';
+                document.getElementById('step2').style.display = 'block';
+            });
+            
+            document.getElementById('step3Next').addEventListener('click', () => {
+                document.getElementById('step3').style.display = 'none';
+                document.getElementById('step4').style.display = 'block';
+            });
+            
+            document.getElementById('step4Back').addEventListener('click', () => {
+                document.getElementById('step4').style.display = 'none';
+                document.getElementById('step3').style.display = 'block';
+            });
+            
+            // Add event listener for scan type selection
+            const scanTypeCards = document.querySelectorAll('.scan-type-card');
+            scanTypeCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove selected class from all cards
+                    scanTypeCards.forEach(c => c.classList.remove('selected'));
+                    // Add selected class to clicked card
+                    this.classList.add('selected');
+                    
+                    // Show/hide appropriate options based on scan type
+                    const scanType = this.getAttribute('data-scan-type');
+                    const webappOptions = document.querySelector('.webapp-options');
+                    const networkOptions = document.querySelector('.network-options');
+                    
+                    if (scanType === 'webapp' || scanType === 'owasp') {
+                        webappOptions.style.display = 'block';
+                        networkOptions.style.display = 'none';
+                    } else if (scanType === 'network' || scanType === 'port') {
+                        webappOptions.style.display = 'none';
+                        networkOptions.style.display = 'block';
+                    }
+                });
+            });
+            
+            // Add event listener for port range selection
+            document.getElementById('portRange').addEventListener('change', function() {
+                const customPortRange = document.querySelector('.custom-port-range');
+                if (this.value === 'custom') {
+                    customPortRange.style.display = 'block';
+                } else {
+                    customPortRange.style.display = 'none';
+                }
+            });
+            
+            // Add event listener for schedule selection
+            document.querySelectorAll('input[name="schedule"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const scheduleOptions = document.querySelector('.schedule-options');
+                    if (this.value === 'later') {
+                        scheduleOptions.style.display = 'block';
+                    } else {
+                        scheduleOptions.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Add event listener for form submission
+            document.getElementById('scanForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                startScan();
+            });
+            
+            // Add event listener for cancel scan button
+            document.getElementById('cancelScanBtn').addEventListener('click', function() {
+                const cancelModal = new bootstrap.Modal(document.getElementById('cancelScanModal'));
+                cancelModal.show();
+            });
+            
+            // Add event listener for confirm cancel button
+            document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+                cancelScan();
+                bootstrap.Modal.getInstance(document.getElementById('cancelScanModal')).hide();
+            });
+            
+            // Add event listener for refresh history button
+            document.getElementById('refreshHistoryBtn').addEventListener('click', refreshScanHistory);
+        }
+
+        // Show new scan card
+        function showNewScanCard() {
+            document.getElementById('newScanCard').style.display = 'block';
+            document.getElementById('scanProgressCard').style.display = 'none';
+            document.getElementById('scanHistoryCard').style.display = 'none';
+        }
+
+        // Show scan history card
+        function showScanHistoryCard() {
+            document.getElementById('newScanCard').style.display = 'none';
+            document.getElementById('scanProgressCard').style.display = 'none';
+            document.getElementById('scanHistoryCard').style.display = 'block';
+        }
+
+        // Start scan
+        function startScan() {
+            // Get form values
+            const targetUrl = document.getElementById('targetUrl').value;
+            const scanName = document.getElementById('scanName').value || targetUrl;
+            
+            // Update progress card with scan details
+            document.getElementById('progressScanName').textContent = scanName;
+            document.getElementById('progressTarget').textContent = targetUrl;
+            
+            // Show progress card
+            document.getElementById('newScanCard').style.display = 'none';
+            document.getElementById('scanProgressCard').style.display = 'block';
+            
+            // Simulate scan progress
+            simulateScanProgress();
+        }
+
+        // Simulate scan progress
+        function simulateScanProgress() {
+            let progress = 0;
+            const progressBar = document.getElementById('overallProgress');
+            const statusMessage = document.getElementById('scanStatusMessage');
+            const progressSteps = document.querySelectorAll('.scan-progress-step');
+            
+            const progressInterval = setInterval(() => {
+                progress += 1;
+                progressBar.style.width = progress + '%';
+                progressBar.textContent = progress + '%';
+                progressBar.setAttribute('aria-valuenow', progress);
+                
+                // Update progress steps
+                if (progress === 25) {
+                    // Discovery phase
+                    progressSteps[0].querySelector('.scan-progress-icon').classList.remove('in-progress');
+                    progressSteps[0].querySelector('.scan-progress-icon').classList.add('completed');
+                    progressSteps[0].querySelector('.scan-progress-icon i').className = 'fas fa-check';
+                    
+                    progressSteps[1].querySelector('.scan-progress-icon').classList.remove('pending');
+                    progressSteps[1].querySelector('.scan-progress-icon').classList.add('in-progress');
+                    progressSteps[1].querySelector('.scan-progress-icon i').className = 'fas fa-spinner';
+                    
+                    statusMessage.textContent = 'Discovery phase in progress. Found 28 pages and 5 forms so far.';
+                } else if (progress === 50) {
+                    // Vulnerability testing phase
+                    progressSteps[1].querySelector('.scan-progress-icon').classList.remove('in-progress');
+                    progressSteps[1].querySelector('.scan-progress-icon').classList.add('completed');
+                    progressSteps[1].querySelector('.scan-progress-icon i').className = 'fas fa-check';
+                    
+                    progressSteps[2].querySelector('.scan-progress-icon').classList.remove('pending');
+                    progressSteps[2].querySelector('.scan-progress-icon').classList.add('in-progress');
+                    progressSteps[2].querySelector('.scan-progress-icon i').className = 'fas fa-spinner';
+                    
+                    statusMessage.textContent = 'Vulnerability testing in progress. Found 3 potential vulnerabilities so far.';
+                } else if (progress === 75) {
+                    // Analysis phase
+                    progressSteps[2].querySelector('.scan-progress-icon').classList.remove('in-progress');
+                    progressSteps[2].querySelector('.scan-progress-icon').classList.add('completed');
+                    progressSteps[2].querySelector('.scan-progress-icon i').className = 'fas fa-check';
+                    
+                    progressSteps[3].querySelector('.scan-progress-icon').classList.remove('pending');
+                    progressSteps[3].querySelector('.scan-progress-icon').classList.add('in-progress');
+                    progressSteps[3].querySelector('.scan-progress-icon i').className = 'fas fa-spinner';
+                    
+                    statusMessage.textContent = 'Analysis and reporting in progress. Generating comprehensive security report.';
+                } else if (progress >= 100) {
+                    // Scan complete
+                    clearInterval(progressInterval);
+                    progressSteps[3].querySelector('.scan-progress-icon').classList.remove('in-progress');
+                    progressSteps[3].querySelector('.scan-progress-icon').classList.add('completed');
+                    progressSteps[3].querySelector('.scan-progress-icon i').className = 'fas fa-check';
+                    
+                    statusMessage.textContent = 'Scan completed successfully. Found 7 vulnerabilities (2 high, 3 medium, 2 low).';
+                    
+                    // Show notification
+                    showNotification('Scan Complete', 'Your security scan has completed successfully. View the report for details.');
+                    
+                    // Add to scan history
+                    setTimeout(() => {
+                        showScanHistoryCard();
+                    }, 3000);
+                }
+                
+                // Update progress bars for each step
+                if (progress < 25) {
+                    progressSteps[0].querySelector('.scan-progress-bar-fill').style.width = (progress * 4) + '%';
+                } else if (progress < 50) {
+                    progressSteps[1].querySelector('.scan-progress-bar-fill').style.width = ((progress - 25) * 4) + '%';
+                } else if (progress < 75) {
+                    progressSteps[2].querySelector('.scan-progress-bar-fill').style.width = ((progress - 50) * 4) + '%';
+                } else {
+                    progressSteps[3].querySelector('.scan-progress-bar-fill').style.width = ((progress - 75) * 4) + '%';
+                }
+            }, 100);
+        }
+
+        // Cancel scan
+        function cancelScan() {
+            // Show notification
+            showNotification('Scan Cancelled', 'The security scan has been cancelled.');
+            
+            // Return to new scan form
+            showNewScanCard();
+        }
+
+        // Refresh scan history
+        function refreshScanHistory() {
+            // Show loading indicator
+            const refreshBtn = document.getElementById('refreshHistoryBtn');
+            const originalText = refreshBtn.innerHTML;
+            refreshBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Refreshing...';
+            refreshBtn.disabled = true;
+            
+            // Simulate refresh
+            setTimeout(() => {
+                refreshBtn.innerHTML = originalText;
+                refreshBtn.disabled = false;
+                
+                // Show notification
+                showNotification('History Updated', 'Scan history has been refreshed.');
+            }, 1000);
+        }
+
+        // Show notification
+        function showNotification(title, message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'position-fixed bottom-0 end-0 p-3';
+            notification.style.zIndex = '5';
+            notification.innerHTML = `
+                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <strong class="me-auto">${title}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+            
+            // Add to document
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoSentinel Executive Security Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1f2c, #2c3e50);
+            color: white;
+            padding: 30px;
+            border-radius: 5px 5px 0 0;
+            text-align: center;
+        }
+        .report-meta {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 1px solid #dee2e6;
+            border-right: 1px solid #dee2e6;
+        }
+        .summary {
+            background-color: white;
+            padding: 30px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        .risk-score {
+            text-align: center;
+            padding: 30px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: white;
+        }
+        .severity-distribution {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+        }
+        .severity-box {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+            margin: 0 10px;
+            color: white;
+        }
+        .critical-findings {
+            background-color: white;
+            padding: 30px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        .finding {
+            border-left: 5px solid #dee2e6;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+        }
+        .critical {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .high {
+            background-color: #fd7e14;
+            border-color: #fd7e14;
+        }
+        .medium {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #333;
+        }
+        .low {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+        .info {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 0 0 5px 5px;
+            border: 1px solid #dee2e6;
+            border-top: none;
+        }
+        .recommendations {
+            background-color: white;
+            padding: 30px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        .recommendation {
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            border-left: 5px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>InfoSentinel Executive Security Report</h1>
+            <p>High-level security assessment for {{ target }}</p>
+        </div>
+        
+        <div class="report-meta">
+            <p><strong>Scan ID:</strong> {{ scan_id }}</p>
+            <p><strong>Target:</strong> {{ target }}</p>
+            <p><strong>Scan Type:</strong> {{ scan_type }}</p>
+            <p><strong>Date:</strong> {{ report_date.strftime('%B %d, %Y') }}</p>
+        </div>
+        
+        <div class="summary">
+            <h2>Executive Summary</h2>
+            <p>This report presents a high-level overview of the security posture for {{ target }} based on a comprehensive security assessment conducted by InfoSentinel's professional security scanning tools.</p>
+            
+            <div class="risk-score">
+                <h3>Overall Security Posture</h3>
+                {% if risk_score >= 75 %}
+                <div class="score-circle critical">{{ '%0.1f'|format(risk_score) }}</div>
+                <p><strong>Critical Risk</strong> - Immediate remediation required</p>
+                {% elif risk_score >= 50 %}
+                <div class="score-circle high">{{ '%0.1f'|format(risk_score) }}</div>
+                <p><strong>High Risk</strong> - Urgent attention needed</p>
+                {% elif risk_score >= 25 %}
+                <div class="score-circle medium">{{ '%0.1f'|format(risk_score) }}</div>
+                <p><strong>Medium Risk</strong> - Remediation recommended</p>
+                {% elif risk_score > 0 %}
+                <div class="score-circle low">{{ '%0.1f'|format(risk_score) }}</div>
+                <p><strong>Low Risk</strong> - Monitor and review</p>
+                {% else %}
+                <div class="score-circle info">{{ '%0.1f'|format(risk_score) }}</div>
+                <p><strong>No Risk Detected</strong> - Continue monitoring</p>
+                {% endif %}
+            </div>
+            
+            <h3>Key Findings</h3>
+            <p>The security assessment identified the following distribution of vulnerabilities:</p>
+            
+            <div class="severity-distribution">
+                <div class="severity-box critical">
+                    <h4>Critical</h4>
+                    <p>{{ severity_counts.critical }}</p>
+                </div>
+                <div class="severity-box high">
+                    <h4>High</h4>
+                    <p>{{ severity_counts.high }}</p>
+                </div>
+                <div class="severity-box medium">
+                    <h4>Medium</h4>
+                    <p>{{ severity_counts.medium }}</p>
+                </div>
+                <div class="severity-box low">
+                    <h4>Low</h4>
+                    <p>{{ severity_counts.low }}</p>
+                </div>
+                <div class="severity-box info">
+                    <h4>Info</h4>
+                    <p>{{ severity_counts.info }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="critical-findings">
+            <h2>Top Security Concerns</h2>
+            
+            {% if critical_findings %}
+            {% for finding in critical_findings %}
+            <div class="finding">
+                <h3>{{ finding.description }}</h3>
+                <p><strong>Severity:</strong> 
+                    {% if finding.severity == 'critical' %}
+                    <span style="color: #dc3545; font-weight: bold;">Critical</span>
+                    {% elif finding.severity == 'high' %}
+                    <span style="color: #fd7e14; font-weight: bold;">High</span>
+                    {% elif finding.severity == 'medium' %}
+                    <span style="color: #ffc107; font-weight: bold;">Medium</span>
+                    {% elif finding.severity == 'low' %}
+                    <span style="color: #17a2b8; font-weight: bold;">Low</span>
+                    {% else %}
+                    <span style="color: #6c757d; font-weight: bold;">Info</span>
+                    {% endif %}
+                </p>
+                
+                {% if finding.remediation %}
+                <p><strong>Recommended Action:</strong> {{ finding.remediation }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% else %}
+            <p>No critical findings were identified during this assessment.</p>
+            {% endif %}
+        </div>
+        
+        <div class="recommendations">
+            <h2>Strategic Recommendations</h2>
+            
+            {% if severity_counts.critical > 0 or severity_counts.high > 0 %}
+            <div class="recommendation">
+                <h3>Immediate Action Required</h3>
+                <p>Address all critical and high severity vulnerabilities as soon as possible to mitigate significant security risks.</p>
+            </div>
+            {% endif %}
+            
+            {% if severity_counts.medium > 0 %}
+            <div class="recommendation">
+                <h3>Planned Remediation</h3>
+                <p>Develop a remediation plan for medium severity vulnerabilities within the next 30-60 days.</p>
+            </div>
+            {% endif %}
+            
+            <div class="recommendation">
+                <h3>Security Program Enhancement</h3>
+                <p>Consider implementing a continuous security monitoring program to identify and address vulnerabilities proactively.</p>
+            </div>
+            
+            <div class="recommendation">
+                <h3>Follow-up Assessment</h3>
+                <p>Schedule a follow-up assessment in 90 days to verify remediation efforts and identify any new vulnerabilities.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This report was generated by InfoSentinel Professional Security Scanner.</p>
+            <p>For detailed technical findings, please refer to the comprehensive technical report.</p>
+            <p>&copy; {{ report_date.year }} InfoSentinel. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

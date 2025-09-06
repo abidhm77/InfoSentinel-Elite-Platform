@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoSentinel - Security Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f1016;
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 204, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 204, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 255, 204, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(15, 16, 22, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00ffcc;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: rgba(0, 255, 204, 0.1);
+            color: #00ffcc;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #00ffcc, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 204, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #00ffcc;
+            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.2);
+        }
+
+        .stat-card.critical {
+            border-color: rgba(255, 82, 82, 0.3);
+        }
+
+        .stat-card.critical:hover {
+            border-color: #ff5252;
+            box-shadow: 0 10px 30px rgba(255, 82, 82, 0.3);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.primary {
+            background: rgba(0, 255, 204, 0.2);
+            color: #00ffcc;
+        }
+
+        .stat-icon.danger {
+            background: rgba(255, 82, 82, 0.2);
+            color: #ff5252;
+        }
+
+        .stat-icon.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Progress Circle */
+        .progress-circle {
+            width: 60px;
+            height: 60px;
+            position: relative;
+        }
+
+        .progress-circle svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .progress-circle circle {
+            fill: none;
+            stroke-width: 4;
+        }
+
+        .progress-bg {
+            stroke: rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-fill {
+            stroke: #00ffcc;
+            stroke-linecap: round;
+            transition: stroke-dasharray 2s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Vulnerability Feed */
+        .vulnerability-feed {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .feed-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #00ffcc;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #4caf50;
+            font-size: 0.9rem;
+        }
+
+        .vulnerability-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .vulnerability-table th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        .vulnerability-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .vulnerability-table tr:hover {
+            background: rgba(0, 255, 204, 0.05);
+        }
+
+        .severity-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .severity-critical {
+            background: rgba(255, 82, 82, 0.2);
+            color: #ff5252;
+        }
+
+        .severity-high {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
+        .severity-medium {
+            background: rgba(255, 235, 59, 0.2);
+            color: #ffeb3b;
+        }
+
+        .severity-low {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        /* Start Scan Button */
+        .start-scan-btn {
+            background: linear-gradient(45deg, #00ffcc, #00b894);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 2rem auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-scan-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .start-scan-btn:hover::before {
+            left: 100%;
+        }
+
+        .start-scan-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .vulnerability-table {
+                font-size: 0.9rem;
+            }
+
+            .vulnerability-table th,
+            .vulnerability-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="index-unified.html" class="logo" aria-label="InfoSentinel Home" style="text-decoration:none;color:inherit;">
+                    <i class="fas fa-shield-alt"></i>
+                    InfoSentinel
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#" class="active">Dashboard</a></li>
+                    <li><a href="pentest.html">Scans</a></li>
+                    <li><a href="vulnerabilities.html">Vulnerabilities</a></li>
+                    <li><a href="vulnerability-report.html">Reports</a></li>
+                    <li><a href="#">Settings</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">Security Dashboard</h1>
+                <p class="page-subtitle">Real-time overview of your security posture</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <!-- Total Scans -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon primary">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="total-scans">0</div>
+                    <div class="stat-label">Total Scans</div>
+                </div>
+
+                <!-- Critical Vulnerabilities -->
+                <div class="stat-card critical">
+                    <div class="stat-header">
+                        <div class="stat-icon danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="critical-vulns">0</div>
+                    <div class="stat-label">Critical Vulnerabilities</div>
+                </div>
+
+                <!-- Active Scans -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon success">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="pulse-dot"></div>
+                    </div>
+                    <div class="stat-value" id="active-scans">0</div>
+                    <div class="stat-label">Active Scans</div>
+                </div>
+
+                <!-- Success Rate -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="progress-circle">
+                            <svg>
+                                <circle class="progress-bg" cx="30" cy="30" r="26"></circle>
+                                <circle class="progress-fill" cx="30" cy="30" r="26" 
+                                        stroke-dasharray="0 163.36" id="progress-circle"></circle>
+                            </svg>
+                            <div class="progress-text" id="progress-text">0%</div>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="success-rate">0%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+            </div>
+
+            <!-- Vulnerability Feed -->
+            <div class="vulnerability-feed">
+                <div class="feed-header">
+                    <h2 class="feed-title">Live Vulnerability Feed</h2>
+                    <div class="live-indicator">
+                        <div class="pulse-dot"></div>
+                        <span>Live</span>
+                    </div>
+                </div>
+                <table class="vulnerability-table">
+                    <thead>
+                        <tr>
+                            <th>Target</th>
+                            <th>Vulnerability</th>
+                            <th>Severity</th>
+                            <th>Discovered</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>api.example.com</td>
+                            <td>SQL Injection in login endpoint</td>
+                            <td><span class="severity-badge severity-critical">Critical</span></td>
+                            <td>2 min ago</td>
+                            <td>New</td>
+                        </tr>
+                        <tr>
+                            <td>webapp.client.net</td>
+                            <td>Cross-Site Scripting (XSS)</td>
+                            <td><span class="severity-badge severity-high">High</span></td>
+                            <td>5 min ago</td>
+                            <td>Investigating</td>
+                        </tr>
+                        <tr>
+                            <td>admin.portal.com</td>
+                            <td>Insecure Direct Object Reference</td>
+                            <td><span class="severity-badge severity-high">High</span></td>
+                            <td>12 min ago</td>
+                            <td>Confirmed</td>
+                        </tr>
+                        <tr>
+                            <td>mobile.app.io</td>
+                            <td>Weak Authentication Mechanism</td>
+                            <td><span class="severity-badge severity-medium">Medium</span></td>
+                            <td>18 min ago</td>
+                            <td>Patched</td>
+                        </tr>
+                        <tr>
+                            <td>blog.company.org</td>
+                            <td>Information Disclosure</td>
+                            <td><span class="severity-badge severity-medium">Medium</span></td>
+                            <td>25 min ago</td>
+                            <td>Reviewing</td>
+                        </tr>
+                        <tr>
+                            <td>shop.ecommerce.net</td>
+                            <td>Missing Security Headers</td>
+                            <td><span class="severity-badge severity-low">Low</span></td>
+                            <td>32 min ago</td>
+                            <td>Fixed</td>
+                        </tr>
+                        <tr>
+                            <td>dashboard.internal.com</td>
+                            <td>Clickjacking Vulnerability</td>
+                            <td><span class="severity-badge severity-low">Low</span></td>
+                            <td>45 min ago</td>
+                            <td>Mitigated</td>
+                        </tr>
+                        <tr>
+                            <td>api.payment.secure</td>
+                            <td>Rate Limiting Bypass</td>
+                            <td><span class="severity-badge severity-medium">Medium</span></td>
+                            <td>1 hour ago</td>
+                            <td>Resolved</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Start New Scan Button -->
+            <button class="start-scan-btn" onclick="startNewScan()">
+                <i class="fas fa-rocket"></i>
+                Start New Scan
+            </button>
+        </div>
+    </main>
+
+    <script>
+        // Counter Animation Function
+        function animateCounter(element, target, duration = 2000) {
+            const start = 0;
+            const startTime = Date.now();
+            
+            function update() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const current = Math.floor(start + (target - start) * progress);
+                
+                if (element.id === 'success-rate') {
+                    element.textContent = current + '%';
+                    // Update progress circle
+                    const circle = document.getElementById('progress-circle');
+                    const progressText = document.getElementById('progress-text');
+                    const circumference = 163.36;
+                    const offset = circumference - (current / 100) * circumference;
+                    circle.style.strokeDasharray = `${circumference - offset} ${circumference}`;
+                    progressText.textContent = current + '%';
+                } else {
+                    element.textContent = current.toLocaleString();
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            update();
+        }
+
+        // Initialize counters on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate counters with delays
+            setTimeout(() => animateCounter(document.getElementById('total-scans'), 2847), 200);
+            setTimeout(() => animateCounter(document.getElementById('critical-vulns'), 23), 400);
+            setTimeout(() => animateCounter(document.getElementById('active-scans'), 3), 600);
+            setTimeout(() => animateCounter(document.getElementById('success-rate'), 94), 800);
+        });
+
+        // Start New Scan Function
+        function startNewScan() {
+            alert('Redirecting to scan configuration...');
+            // In a real application, this would redirect to the scan setup page
+            window.location.href = 'pentest.html';
+        }
+
+        // Add some interactivity to the vulnerability table
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableRows = document.querySelectorAll('.vulnerability-table tbody tr');
+            
+            tableRows.forEach(row => {
+                row.addEventListener('click', function() {
+                    const vulnerability = this.cells[1].textContent;
+                    alert(`Viewing details for: ${vulnerability}`);
+                    // In a real application, this would open a detailed view
+                });
+            });
+        });
+    </script>
+</body>
+</html>

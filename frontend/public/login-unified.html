@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoSentinel - Secure Login</title>
+    <link rel="stylesheet" href="css/cyberpunk-unified.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Unified Navigation -->
+    <nav class="cyber-nav">
+        <a href="index-unified.html" class="nav-brand">
+            <div class="nav-logo">IS</div>
+            <div class="nav-title">InfoSentinel</div>
+        </a>
+        
+        <ul class="nav-links" id="navLinks">
+            <li><a href="index-unified.html" class="nav-link">Dashboard</a></li>
+            <li><a href="pentest-unified.html" class="nav-link">Penetration Testing</a></li>
+            <li><a href="vulnerabilities-unified.html" class="nav-link">Vulnerabilities</a></li>
+            <li><a href="reports-unified.html" class="nav-link">Reports</a></li>
+            <li><a href="stats-unified.html" class="nav-link">Statistics</a></li>
+            <li><a href="login-unified.html" class="nav-link active">Login</a></li>
+        </ul>
+        
+        <button class="nav-toggle" id="navToggle">☰</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="cyber-main">
+        <div class="cyber-container">
+            <!-- Login Section -->
+            <section class="cyber-section animate-fade-in-up">
+                <div class="login-container">
+                    <!-- Login Form -->
+                    <div class="cyber-card login-card" id="loginCard">
+                        <div class="cyber-card-header text-center">
+                            <div class="login-logo mb-3">
+                                <div class="nav-logo" style="width: 60px; height: 60px; font-size: 2rem; margin: 0 auto;">IS</div>
+                            </div>
+                            <h2 class="cyber-card-title">🔐 Secure Access</h2>
+                            <p class="cyber-card-subtitle">Enterprise Security Platform Authentication</p>
+                        </div>
+                        
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Username or Email</label>
+                                <input type="text" class="cyber-input" id="username" 
+                                       placeholder="Enter your username or email" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Password</label>
+                                <div class="password-input-container">
+                                    <input type="password" class="cyber-input" id="password" 
+                                           placeholder="Enter your password" required>
+                                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                                        👁️
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Role</label>
+                                <select class="cyber-select" id="userRole">
+                                    <option value="admin">Security Administrator</option>
+                                    <option value="analyst">Security Analyst</option>
+                                    <option value="auditor">Security Auditor</option>
+                                    <option value="viewer">Read-Only Viewer</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3 flex items-center gap-2">
+                                <input type="checkbox" id="rememberMe">
+                                <label for="rememberMe" class="text-secondary">Remember me for 30 days</label>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <button type="submit" class="cyber-btn cyber-btn-primary w-full" id="loginBtn">
+                                    🚀 Sign In
+                                </button>
+                            </div>
+                            
+                            <div class="login-divider">
+                                <span>or</span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <button type="button" class="cyber-btn cyber-btn-secondary w-full" onclick="showMFASetup()">
+                                    🔑 Enable Multi-Factor Authentication
+                                </button>
+                            </div>
+                            
+                            <div class="login-links text-center">
+                                <a href="#" class="text-accent" onclick="showForgotPassword()">Forgot Password?</a>
+                                <span class="text-muted mx-2">•</span>
+                                <a href="#" class="text-accent" onclick="showRegister()">Create Account</a>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- MFA Setup Card -->
+                    <div class="cyber-card login-card hidden" id="mfaCard">
+                        <div class="cyber-card-header text-center">
+                            <h2 class="cyber-card-title">🔐 Multi-Factor Authentication</h2>
+                            <p class="cyber-card-subtitle">Enhance your account security</p>
+                        </div>
+                        
+                        <div class="mfa-setup">
+                            <div class="mfa-step" id="mfaStep1">
+                                <h3 class="text-primary mb-3">Step 1: Choose MFA Method</h3>
+                                
+                                <div class="mfa-methods">
+                                    <div class="mfa-method" onclick="selectMFAMethod('app')">
+                                        <div class="mfa-icon">📱</div>
+                                        <h4>Authenticator App</h4>
+                                        <p class="text-secondary">Use Google Authenticator, Authy, or similar apps</p>
+                                    </div>
+                                    
+                                    <div class="mfa-method" onclick="selectMFAMethod('sms')">
+                                        <div class="mfa-icon">📱</div>
+                                        <h4>SMS Verification</h4>
+                                        <p class="text-secondary">Receive codes via text message</p>
+                                    </div>
+                                    
+                                    <div class="mfa-method" onclick="selectMFAMethod('email')">
+                                        <div class="mfa-icon">📧</div>
+                                        <h4>Email Verification</h4>
+                                        <p class="text-secondary">Receive codes via email</p>
+                                    </div>
+                                    
+                                    <div class="mfa-method" onclick="selectMFAMethod('hardware')">
+                                        <div class="mfa-icon">🔑</div>
+                                        <h4>Hardware Token</h4>
+                                        <p class="text-secondary">Use YubiKey or similar hardware tokens</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mfa-step hidden" id="mfaStep2">
+                                <h3 class="text-primary mb-3">Step 2: Setup Authentication</h3>
+                                
+                                <div id="mfaSetupContent">
+                                    <!-- Dynamic content based on selected method -->
+                                </div>
+                                
+                                <div class="flex gap-2 mt-4">
+                                    <button class="cyber-btn cyber-btn-secondary" onclick="previousMFAStep()">
+                                        ← Back
+                                    </button>
+                                    <button class="cyber-btn cyber-btn-primary" onclick="completeMFASetup()">
+                                        Complete Setup
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button class="cyber-btn cyber-btn-secondary" onclick="showLogin()">
+                                ← Back to Login
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Forgot Password Card -->
+                    <div class="cyber-card login-card hidden" id="forgotCard">
+                        <div class="cyber-card-header text-center">
+                            <h2 class="cyber-card-title">🔄 Password Recovery</h2>
+                            <p class="cyber-card-subtitle">Reset your account password</p>
+                        </div>
+                        
+                        <form id="forgotForm">
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Email Address</label>
+                                <input type="email" class="cyber-input" id="forgotEmail" 
+                                       placeholder="Enter your email address" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Security Question</label>
+                                <select class="cyber-select" id="securityQuestion">
+                                    <option value="">Select a security question</option>
+                                    <option value="pet">What was the name of your first pet?</option>
+                                    <option value="school">What was the name of your elementary school?</option>
+                                    <option value="city">In what city were you born?</option>
+                                    <option value="mother">What is your mother's maiden name?</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Answer</label>
+                                <input type="text" class="cyber-input" id="securityAnswer" 
+                                       placeholder="Enter your answer" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <button type="submit" class="cyber-btn cyber-btn-primary w-full">
+                                    📧 Send Recovery Email
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="text-center">
+                            <button class="cyber-btn cyber-btn-secondary" onclick="showLogin()">
+                                ← Back to Login
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Register Card -->
+                    <div class="cyber-card login-card hidden" id="registerCard">
+                        <div class="cyber-card-header text-center">
+                            <h2 class="cyber-card-title">👤 Create Account</h2>
+                            <p class="cyber-card-subtitle">Join the InfoSentinel security platform</p>
+                        </div>
+                        
+                        <form id="registerForm">
+                            <div class="cyber-grid cyber-grid-2 mb-3">
+                                <div>
+                                    <label class="block text-primary mb-2">First Name</label>
+                                    <input type="text" class="cyber-input" id="firstName" 
+                                           placeholder="First name" required>
+                                </div>
+                                <div>
+                                    <label class="block text-primary mb-2">Last Name</label>
+                                    <input type="text" class="cyber-input" id="lastName" 
+                                           placeholder="Last name" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Email Address</label>
+                                <input type="email" class="cyber-input" id="registerEmail" 
+                                       placeholder="Enter your email address" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Username</label>
+                                <input type="text" class="cyber-input" id="registerUsername" 
+                                       placeholder="Choose a username" required>
+                            </div>
+                            
+                            <div class="cyber-grid cyber-grid-2 mb-3">
+                                <div>
+                                    <label class="block text-primary mb-2">Password</label>
+                                    <input type="password" class="cyber-input" id="registerPassword" 
+                                           placeholder="Create password" required>
+                                </div>
+                                <div>
+                                    <label class="block text-primary mb-2">Confirm Password</label>
+                                    <input type="password" class="cyber-input" id="confirmPassword" 
+                                           placeholder="Confirm password" required>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Organization</label>
+                                <input type="text" class="cyber-input" id="organization" 
+                                       placeholder="Your organization name">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Requested Role</label>
+                                <select class="cyber-select" id="requestedRole">
+                                    <option value="viewer">Read-Only Viewer</option>
+                                    <option value="analyst">Security Analyst</option>
+                                    <option value="auditor">Security Auditor</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3 flex items-center gap-2">
+                                <input type="checkbox" id="agreeTerms" required>
+                                <label for="agreeTerms" class="text-secondary">I agree to the Terms of Service and Privacy Policy</label>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <button type="submit" class="cyber-btn cyber-btn-primary w-full">
+                                    🚀 Create Account
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="text-center">
+                            <button class="cyber-btn cyber-btn-secondary" onclick="showLogin()">
+                                ← Back to Login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Features -->
+            <section class="cyber-section">
+                <div class="cyber-grid cyber-grid-3">
+                    <div class="cyber-card text-center">
+                        <div class="security-feature-icon mb-3">🔒</div>
+                        <h3 class="text-primary mb-2">Enterprise Security</h3>
+                        <p class="text-secondary">Advanced encryption and security protocols protect your data</p>
+                    </div>
+                    
+                    <div class="cyber-card text-center">
+                        <div class="security-feature-icon mb-3">🛡️</div>
+                        <h3 class="text-primary mb-2">Multi-Factor Authentication</h3>
+                        <p class="text-secondary">Multiple authentication methods for enhanced security</p>
+                    </div>
+                    
+                    <div class="cyber-card text-center">
+                        <div class="security-feature-icon mb-3">👥</div>
+                        <h3 class="text-primary mb-2">Role-Based Access</h3>
+                        <p class="text-secondary">Granular permissions based on your organizational role</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Login Activity -->
+            <section class="cyber-section">
+                <div class="cyber-card">
+                    <div class="cyber-card-header">
+                        <h3 class="cyber-card-title">📊 Login Activity</h3>
+                        <p class="cyber-card-subtitle">Recent authentication attempts and security events</p>
+                    </div>
+                    
+                    <div class="login-activity" id="loginActivity">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Custom Styles -->
+    <style>
+        .login-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .login-card {
+            margin-bottom: 2rem;
+        }
+        
+        .password-input-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .password-toggle:hover {
+            color: var(--accent-cyan);
+        }
+        
+        .login-divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        
+        .login-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--border-subtle);
+        }
+        
+        .login-divider span {
+            background: var(--bg-glass);
+            padding: 0 1rem;
+            color: var(--text-muted);
+        }
+        
+        .login-links a {
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+        
+        .login-links a:hover {
+            color: var(--accent-cyan);
+        }
+        
+        .mfa-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .mfa-method {
+            background: var(--bg-glass-light);
+            border: 2px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+        
+        .mfa-method:hover,
+        .mfa-method.selected {
+            border-color: var(--accent-cyan);
+            background: rgba(0, 255, 204, 0.1);
+        }
+        
+        .mfa-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .mfa-method h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .security-feature-icon {
+            font-size: 3rem;
+        }
+        
+        .login-activity-item {
+            background: var(--bg-glass-light);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--accent-cyan);
+        }
+        
+        .login-activity-item.failed {
+            border-left-color: #ef4444;
+        }
+        
+        .login-activity-item.success {
+            border-left-color: #22c55e;
+        }
+        
+        .qr-code {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            margin: 1rem 0;
+        }
+    </style>
+
+    <!-- JavaScript -->
+    <script>
+        // Navigation Toggle
+        document.getElementById('navToggle').addEventListener('click', function() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        });
+
+        // Global variables
+        let currentMFAMethod = null;
+        let currentMFAStep = 1;
+
+        // Show/hide cards
+        function showCard(cardId) {
+            document.querySelectorAll('.login-card').forEach(card => {
+                card.classList.add('hidden');
+            });
+            document.getElementById(cardId).classList.remove('hidden');
+        }
+
+        function showLogin() {
+            showCard('loginCard');
+        }
+
+        function showMFASetup() {
+            showCard('mfaCard');
+            currentMFAStep = 1;
+            showMFAStep(1);
+        }
+
+        function showForgotPassword() {
+            showCard('forgotCard');
+        }
+
+        function showRegister() {
+            showCard('registerCard');
+        }
+
+        // Password toggle
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleBtn = document.querySelector('.password-toggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        }
+
+        // MFA Setup
+        function selectMFAMethod(method) {
+            currentMFAMethod = method;
+            
+            // Remove previous selection
+            document.querySelectorAll('.mfa-method').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Add selection to clicked method
+            event.target.closest('.mfa-method').classList.add('selected');
+            
+            // Show next step after a delay
+            setTimeout(() => {
+                showMFAStep(2);
+            }, 500);
+        }
+
+        function showMFAStep(step) {
+            document.querySelectorAll('.mfa-step').forEach(el => {
+                el.classList.add('hidden');
+            });
+            document.getElementById(`mfaStep${step}`).classList.remove('hidden');
+            
+            if (step === 2) {
+                setupMFAMethod();
+            }
+        }
+
+        function setupMFAMethod() {
+            const content = document.getElementById('mfaSetupContent');
+            
+            switch (currentMFAMethod) {
+                case 'app':
+                    content.innerHTML = `
+                        <div class="text-center">
+                            <p class="mb-3">Scan this QR code with your authenticator app:</p>
+                            <div class="qr-code">
+                                <div style="width: 200px; height: 200px; background: #f0f0f0; margin: 0 auto; display: flex; align-items: center; justify-content: center; color: #000;">
+                                    QR CODE
+                                </div>
+                            </div>
+                            <p class="text-secondary mb-3">Or enter this code manually: <code>JBSWY3DPEHPK3PXP</code></p>
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Verification Code</label>
+                                <input type="text" class="cyber-input" placeholder="Enter 6-digit code" maxlength="6">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'sms':
+                    content.innerHTML = `
+                        <div>
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Phone Number</label>
+                                <input type="tel" class="cyber-input" placeholder="+1 (555) 123-4567">
+                            </div>
+                            <button class="cyber-btn cyber-btn-secondary mb-3" onclick="sendSMSCode()">
+                                📱 Send Verification Code
+                            </button>
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Verification Code</label>
+                                <input type="text" class="cyber-input" placeholder="Enter 6-digit code" maxlength="6">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'email':
+                    content.innerHTML = `
+                        <div>
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Email Address</label>
+                                <input type="email" class="cyber-input" placeholder="your.email@example.com">
+                            </div>
+                            <button class="cyber-btn cyber-btn-secondary mb-3" onclick="sendEmailCode()">
+                                📧 Send Verification Code
+                            </button>
+                            <div class="mb-3">
+                                <label class="block text-primary mb-2">Verification Code</label>
+                                <input type="text" class="cyber-input" placeholder="Enter 6-digit code" maxlength="6">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'hardware':
+                    content.innerHTML = `
+                        <div>
+                            <p class="mb-3">Insert your hardware security key and follow the prompts.</p>
+                            <div class="text-center mb-3">
+                                <div style="font-size: 4rem; margin: 2rem 0;">🔑</div>
+                                <p class="text-secondary">Touch your security key when it blinks</p>
+                            </div>
+                            <button class="cyber-btn cyber-btn-secondary" onclick="testHardwareKey()">
+                                🔍 Test Hardware Key
+                            </button>
+                        </div>
+                    `;
+                    break;
+            }
+        }
+
+        function previousMFAStep() {
+            showMFAStep(1);
+        }
+
+        function completeMFASetup() {
+            alert('MFA setup completed successfully!');
+            showLogin();
+        }
+
+        function sendSMSCode() {
+            alert('SMS verification code sent!');
+        }
+
+        function sendEmailCode() {
+            alert('Email verification code sent!');
+        }
+
+        function testHardwareKey() {
+            alert('Hardware key detected and verified!');
+        }
+
+        // Form submissions
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username && password) {
+                const loginBtn = document.getElementById('loginBtn');
+                loginBtn.textContent = '🔄 Signing In...';
+                loginBtn.disabled = true;
+                
+                try {
+                    // Real API login
+                    const response = await fetch('http://localhost:5001/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success && data.token) {
+                        // Store token and user data
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('user', JSON.stringify(data.user));
+                        
+                        // Add to login activity
+                        addLoginActivity('success', username, data.user.role);
+                        
+                        // Redirect to dashboard
+                        window.location.href = 'pentest-unified.html';
+                    } else {
+                        throw new Error(data.message || 'Login failed');
+                    }
+                    
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('Login failed: ' + error.message);
+                    addLoginActivity('failed', username, 'unknown');
+                } finally {
+                    loginBtn.textContent = '🔐 Sign In';
+                    loginBtn.disabled = false;
+                }
+            }
+        });
+
+        document.getElementById('forgotForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Password recovery email sent!');
+            showLogin();
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            
+            alert('Account created successfully! Please check your email for verification.');
+            showLogin();
+        });
+
+        // Login activity
+        function addLoginActivity(type, username, role) {
+            const activity = {
+                type: type,
+                username: username,
+                role: role,
+                timestamp: new Date().toLocaleString(),
+                ip: '192.168.1.' + Math.floor(Math.random() * 254 + 1),
+                userAgent: 'Chrome 91.0.4472.124'
+            };
+            
+            const activityContainer = document.getElementById('loginActivity');
+            const activityElement = document.createElement('div');
+            activityElement.className = `login-activity-item ${type}`;
+            
+            activityElement.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div class="text-primary font-medium">
+                            ${type === 'success' ? '✅' : '❌'} ${type === 'success' ? 'Successful' : 'Failed'} Login
+                        </div>
+                        <div class="text-secondary text-sm">
+                            User: ${username} (${role})<br>
+                            IP: ${activity.ip}<br>
+                            Time: ${activity.timestamp}
+                        </div>
+                    </div>
+                    <div class="cyber-badge cyber-badge-${type === 'success' ? 'success' : 'danger'}">
+                        ${type.toUpperCase()}
+                    </div>
+                </div>
+            `;
+            
+            activityContainer.insertBefore(activityElement, activityContainer.firstChild);
+            
+            // Keep only last 5 activities
+            while (activityContainer.children.length > 5) {
+                activityContainer.removeChild(activityContainer.lastChild);
+            }
+        }
+
+        // Initialize login activity with sample data
+        function initializeLoginActivity() {
+            const sampleActivities = [
+                { type: 'success', username: 'admin', role: 'Security Administrator', time: '2 minutes ago' },
+                { type: 'failed', username: 'unknown', role: 'N/A', time: '15 minutes ago' },
+                { type: 'success', username: 'analyst1', role: 'Security Analyst', time: '1 hour ago' },
+                { type: 'success', username: 'auditor', role: 'Security Auditor', time: '3 hours ago' }
+            ];
+            
+            sampleActivities.forEach(activity => {
+                const activityContainer = document.getElementById('loginActivity');
+                const activityElement = document.createElement('div');
+                activityElement.className = `login-activity-item ${activity.type}`;
+                
+                activityElement.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="text-primary font-medium">
+                                ${activity.type === 'success' ? '✅' : '❌'} ${activity.type === 'success' ? 'Successful' : 'Failed'} Login
+                            </div>
+                            <div class="text-secondary text-sm">
+                                User: ${activity.username} (${activity.role})<br>
+                                IP: 192.168.1.${Math.floor(Math.random() * 254 + 1)}<br>
+                                Time: ${activity.time}
+                            </div>
+                        </div>
+                        <div class="cyber-badge cyber-badge-${activity.type === 'success' ? 'success' : 'danger'}">
+                            ${activity.type.toUpperCase()}
+                        </div>
+                    </div>
+                `;
+                
+                activityContainer.appendChild(activityElement);
+            });
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeLoginActivity();
+            
+            // Set demo credentials
+            document.getElementById('username').value = 'admin';
+            document.getElementById('password').value = 'admin123';
+        });
+    </script>
+</body>
+</html>

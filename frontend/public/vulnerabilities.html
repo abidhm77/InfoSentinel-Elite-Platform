@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoSentinel - Vulnerability Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f1016;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* Header Navigation */
+        .header {
+            background: rgba(15, 16, 22, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00ffcc;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: rgba(0, 255, 204, 0.1);
+            color: #00ffcc;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #00ffcc, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* Filters Bar */
+        .filters-bar {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .filter-input {
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            min-width: 200px;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #00ffcc;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+        }
+
+        .filter-select {
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .filter-select option {
+            background: #0f1016;
+            color: #ffffff;
+        }
+
+        /* Vulnerability Grid */
+        .vulnerabilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .vulnerability-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vulnerability-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 204, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .vulnerability-card:hover::before {
+            left: 100%;
+        }
+
+        .vulnerability-card:hover {
+            transform: translateY(-5px);
+            border-color: #00ffcc;
+            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .severity-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .severity-critical {
+            background: rgba(220, 38, 127, 0.2);
+            color: #dc267f;
+            border: 1px solid #dc267f;
+        }
+
+        .severity-high {
+            background: rgba(255, 159, 67, 0.2);
+            color: #ff9f43;
+            border: 1px solid #ff9f43;
+        }
+
+        .severity-medium {
+            background: rgba(255, 234, 167, 0.2);
+            color: #feca57;
+            border: 1px solid #feca57;
+        }
+
+        .severity-low {
+            background: rgba(116, 185, 255, 0.2);
+            color: #74b9ff;
+            border: 1px solid #74b9ff;
+        }
+
+        .cve-number {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #00ffcc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cve-number:hover {
+            text-decoration: underline;
+        }
+
+        .vulnerability-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .vulnerability-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cvss-score {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cvss-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #00ffcc;
+        }
+
+        .view-details-btn {
+            background: linear-gradient(45deg, #00ffcc, #00b894);
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-details-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 204, 0.4);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(15, 16, 22, 0.95);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            margin: 1rem;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #00ffcc;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-section h3 {
+            color: #00ffcc;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .modal-section p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #00ffcc;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .references-list {
+            list-style: none;
+        }
+
+        .references-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .references-list a {
+            color: #00ffcc;
+            text-decoration: none;
+        }
+
+        .references-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 255, 204, 0.9);
+            color: #000;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .filters-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-group {
+                width: 100%;
+            }
+            
+            .filter-input,
+            .filter-select {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .vulnerabilities-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                margin: 0.5rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="index-unified.html" class="logo" aria-label="InfoSentinel Home" style="text-decoration:none;color:inherit;">
+                🛡️ InfoSentinel
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="pentest.html">Penetration Testing</a></li>
+                    <li><a href="vulnerabilities.html" class="active">Vulnerabilities</a></li>
+                    <li><a href="vulnerability-report.html">Reports</a></li>
+                    <li><a href="#">Settings</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <h1 class="page-title">Vulnerability Management</h1>
+        <p class="page-subtitle">Monitor and manage security vulnerabilities across your infrastructure</p>
+
+        <!-- Filters Bar -->
+        <div class="filters-bar">
+            <div class="filter-group">
+                <label class="filter-label">Severity</label>
+                <select class="filter-select" id="severity-filter">
+                    <option value="all">All Severities</option>
+                    <option value="critical">Critical</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Date Range</label>
+                <input type="date" class="filter-input" id="date-filter">
+            </div>
+            
+            <div class="filter-group">
+                <label class="filter-label">Search</label>
+                <input type="text" class="filter-input" id="search-filter" placeholder="Search vulnerabilities...">
+            </div>
+        </div>
+
+        <!-- Vulnerabilities Grid -->
+        <div class="vulnerabilities-grid" id="vulnerabilities-grid">
+            <!-- Vulnerability cards will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="vulnerability-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">Vulnerability Details</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Description</h3>
+                <p id="modal-description"></p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Proof of Concept</h3>
+                <div class="code-block" id="modal-poc"></div>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Remediation Steps</h3>
+                <p id="modal-remediation"></p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>References</h3>
+                <ul class="references-list" id="modal-references"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">CVE number copied to clipboard!</div>
+
+    <script>
+        // Sample vulnerability data
+        const vulnerabilities = [
+            {
+                id: 1,
+                cve: "CVE-2024-1234",
+                title: "SQL Injection in User Authentication",
+                description: "Critical SQL injection vulnerability allowing unauthorized database access through login form.",
+                severity: "critical",
+                cvss: 9.8,
+                date: "2024-01-15",
+                fullDescription: "A critical SQL injection vulnerability exists in the user authentication module. Attackers can bypass authentication and gain unauthorized access to the database by injecting malicious SQL code through the username parameter.",
+                poc: "' OR '1'='1' -- ",
+                remediation: "1. Implement parameterized queries\n2. Use input validation and sanitization\n3. Apply principle of least privilege to database accounts\n4. Enable SQL injection detection in WAF",
+                references: [
+                    "https://owasp.org/www-community/attacks/SQL_Injection",
+                    "https://cwe.mitre.org/data/definitions/89.html"
+                ]
+            },
+            {
+                id: 2,
+                cve: "CVE-2024-1235",
+                title: "Remote Code Execution via File Upload",
+                description: "Critical RCE vulnerability allowing arbitrary code execution through malicious file uploads.",
+                severity: "critical",
+                cvss: 9.9,
+                date: "2024-01-14",
+                fullDescription: "The file upload functionality does not properly validate file types, allowing attackers to upload and execute malicious scripts on the server.",
+                poc: "<?php system($_GET['cmd']); ?>",
+                remediation: "1. Implement strict file type validation\n2. Store uploaded files outside web root\n3. Use content-type validation\n4. Implement file scanning",
+                references: [
+                    "https://owasp.org/www-community/vulnerabilities/Unrestricted_File_Upload",
+                    "https://cwe.mitre.org/data/definitions/434.html"
+                ]
+            },
+            {
+                id: 3,
+                cve: "CVE-2024-1236",
+                title: "Authentication Bypass via JWT Manipulation",
+                description: "Critical authentication bypass allowing unauthorized access through JWT token manipulation.",
+                severity: "critical",
+                cvss: 9.1,
+                date: "2024-01-13",
+                fullDescription: "The JWT implementation lacks proper signature verification, allowing attackers to modify tokens and gain unauthorized access.",
+                poc: "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjoiYWRtaW4ifQ.",
+                remediation: "1. Implement proper JWT signature verification\n2. Use strong signing algorithms\n3. Validate token expiration\n4. Implement token blacklisting",
+                references: [
+                    "https://auth0.com/blog/a-look-at-the-latest-draft-for-jwt-bcp/",
+                    "https://cwe.mitre.org/data/definitions/287.html"
+                ]
+            },
+            {
+                id: 4,
+                cve: "CVE-2024-1237",
+                title: "Stored Cross-Site Scripting (XSS)",
+                description: "High severity XSS vulnerability allowing persistent script injection in user comments.",
+                severity: "high",
+                cvss: 8.8,
+                date: "2024-01-12",
+                fullDescription: "User input in comment fields is not properly sanitized, allowing attackers to inject malicious scripts that execute in other users' browsers.",
+                poc: "&lt;script&gt;alert('XSS')&lt;/script&gt;",
+                remediation: "1. Implement output encoding\n2. Use Content Security Policy\n3. Validate and sanitize user input\n4. Use secure templating engines",
+                references: [
+                    "https://owasp.org/www-community/attacks/xss/",
+                    "https://cwe.mitre.org/data/definitions/79.html"
+                ]
+            },
+            {
+                id: 5,
+                cve: "CVE-2024-1238",
+                title: "Cross-Site Request Forgery (CSRF)",
+                description: "High severity CSRF vulnerability allowing unauthorized actions on behalf of authenticated users.",
+                severity: "high",
+                cvss: 8.1,
+                date: "2024-01-11",
+                fullDescription: "The application lacks proper CSRF protection, allowing attackers to perform unauthorized actions on behalf of authenticated users.",
+                poc: "&lt;form action='/transfer' method='POST'&gt;&lt;input name='amount' value='1000'&gt;&lt;input name='to' value='attacker'&gt;&lt;/form&gt;",
+                remediation: "1. Implement CSRF tokens\n2. Validate referrer headers\n3. Use SameSite cookie attributes\n4. Implement double-submit cookies",
+                references: [
+                    "https://owasp.org/www-community/attacks/csrf",
+                    "https://cwe.mitre.org/data/definitions/352.html"
+                ]
+            },
+            {
+                id: 6,
+                cve: "CVE-2024-1239",
+                title: "Path Traversal Vulnerability",
+                description: "High severity path traversal allowing access to sensitive files outside the web root.",
+                severity: "high",
+                cvss: 7.5,
+                date: "2024-01-10",
+                fullDescription: "The file download functionality does not properly validate file paths, allowing attackers to access sensitive files outside the intended directory.",
+                poc: "../../../etc/passwd",
+                remediation: "1. Implement path validation\n2. Use whitelisting for allowed files\n3. Canonicalize file paths\n4. Implement access controls",
+                references: [
+                    "https://owasp.org/www-community/attacks/Path_Traversal",
+                    "https://cwe.mitre.org/data/definitions/22.html"
+                ]
+            },
+            {
+                id: 7,
+                cve: "CVE-2024-1240",
+                title: "XML External Entity (XXE) Injection",
+                description: "High severity XXE vulnerability allowing disclosure of internal files and SSRF attacks.",
+                severity: "high",
+                cvss: 8.2,
+                date: "2024-01-09",
+                fullDescription: "The XML parser processes external entities without proper validation, allowing attackers to read internal files and perform SSRF attacks.",
+                poc: "<!DOCTYPE foo [<!ENTITY xxe SYSTEM 'file:///etc/passwd'>]><root>&xxe;</root>",
+                remediation: "1. Disable external entity processing\n2. Use secure XML parsers\n3. Implement input validation\n4. Use JSON instead of XML where possible",
+                references: [
+                    "https://owasp.org/www-community/vulnerabilities/XML_External_Entity_(XXE)_Processing",
+                    "https://cwe.mitre.org/data/definitions/611.html"
+                ]
+            },
+            {
+                id: 8,
+                cve: "CVE-2024-1241",
+                title: "Information Disclosure via Error Messages",
+                description: "Medium severity information disclosure revealing sensitive system information in error messages.",
+                severity: "medium",
+                cvss: 5.3,
+                date: "2024-01-08",
+                fullDescription: "Detailed error messages expose sensitive information about the system architecture, database structure, and file paths.",
+                poc: "Error: Database connection failed at /var/www/config/database.php line 42",
+                remediation: "1. Implement generic error messages\n2. Log detailed errors server-side\n3. Configure custom error pages\n4. Remove debug information from production",
+                references: [
+                    "https://owasp.org/www-community/Improper_Error_Handling",
+                    "https://cwe.mitre.org/data/definitions/209.html"
+                ]
+            },
+            {
+                id: 9,
+                cve: "CVE-2024-1242",
+                title: "Weak Cryptographic Implementation",
+                description: "Medium severity vulnerability using deprecated MD5 hashing for password storage.",
+                severity: "medium",
+                cvss: 6.2,
+                date: "2024-01-07",
+                fullDescription: "The application uses MD5 hashing for password storage, which is cryptographically weak and vulnerable to rainbow table attacks.",
+                poc: "MD5('password123') = 482c811da5d5b4bc6d497ffa98491e38",
+                remediation: "1. Migrate to bcrypt or Argon2\n2. Implement proper salt generation\n3. Use key stretching techniques\n4. Force password reset for existing users",
+                references: [
+                    "https://owasp.org/www-community/vulnerabilities/Use_of_a_Broken_or_Risky_Cryptographic_Algorithm",
+                    "https://cwe.mitre.org/data/definitions/327.html"
+                ]
+            },
+            {
+                id: 10,
+                cve: "CVE-2024-1243",
+                title: "Server-Side Request Forgery (SSRF)",
+                description: "Medium severity SSRF vulnerability allowing requests to internal network resources.",
+                severity: "medium",
+                cvss: 6.8,
+                date: "2024-01-06",
+                fullDescription: "The URL fetching functionality does not properly validate target URLs, allowing attackers to make requests to internal network resources.",
+                poc: "http://localhost:8080/admin",
+                remediation: "1. Implement URL validation and whitelisting\n2. Use network segmentation\n3. Disable unnecessary URL schemes\n4. Implement request timeouts",
+                references: [
+                    "https://owasp.org/www-community/attacks/Server_Side_Request_Forgery",
+                    "https://cwe.mitre.org/data/definitions/918.html"
+                ]
+            },
+            {
+                id: 11,
+                cve: "CVE-2024-1244",
+                title: "Missing Security Headers",
+                description: "Low severity issue with missing security headers allowing clickjacking attacks.",
+                severity: "low",
+                cvss: 3.1,
+                date: "2024-01-05",
+                fullDescription: "The application lacks important security headers such as X-Frame-Options, X-Content-Type-Options, and Content-Security-Policy.",
+                poc: "&lt;iframe src='https://vulnerable-site.com'&gt;&lt;/iframe&gt;",
+                remediation: "1. Implement X-Frame-Options header\n2. Add Content-Security-Policy\n3. Set X-Content-Type-Options\n4. Configure HSTS header",
+                references: [
+                    "https://owasp.org/www-community/attacks/Clickjacking",
+                    "https://cwe.mitre.org/data/definitions/693.html"
+                ]
+            },
+            {
+                id: 12,
+                cve: "CVE-2024-1245",
+                title: "Version Information Disclosure",
+                description: "Low severity information disclosure revealing software versions in HTTP headers.",
+                severity: "low",
+                cvss: 2.7,
+                date: "2024-01-04",
+                fullDescription: "HTTP response headers reveal detailed version information about the web server and application framework, aiding attackers in reconnaissance.",
+                poc: "Server: Apache/2.4.41 (Ubuntu)\nX-Powered-By: PHP/7.4.3",
+                remediation: "1. Remove or obfuscate server headers\n2. Configure web server to hide version info\n3. Use reverse proxy to mask backend\n4. Implement custom error pages",
+                references: [
+                    "https://owasp.org/www-community/Security_Headers",
+                    "https://cwe.mitre.org/data/definitions/200.html"
+                ]
+            }
+        ];
+
+        let filteredVulnerabilities = [...vulnerabilities];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderVulnerabilities();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Search filter
+            document.getElementById('search-filter').addEventListener('input', filterVulnerabilities);
+            
+            // Severity filter
+            document.getElementById('severity-filter').addEventListener('change', filterVulnerabilities);
+            
+            // Date filter
+            document.getElementById('date-filter').addEventListener('change', filterVulnerabilities);
+            
+            // Modal close on outside click
+            document.getElementById('vulnerability-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+        }
+
+        function renderVulnerabilities() {
+            const grid = document.getElementById('vulnerabilities-grid');
+            grid.innerHTML = '';
+
+            filteredVulnerabilities.forEach(vuln => {
+                const card = createVulnerabilityCard(vuln);
+                grid.appendChild(card);
+            });
+        }
+
+        function createVulnerabilityCard(vuln) {
+            const card = document.createElement('div');
+            card.className = 'vulnerability-card';
+            card.innerHTML = `
+                <div class="card-header">
+                    <span class="severity-badge severity-${vuln.severity}">${vuln.severity}</span>
+                    <span class="cve-number" onclick="copyToClipboard('${vuln.cve}')">${vuln.cve}</span>
+                </div>
+                <h3 class="vulnerability-title">${vuln.title}</h3>
+                <p class="vulnerability-description">${vuln.description}</p>
+                <div class="card-footer">
+                    <div class="cvss-score">
+                        <span>CVSS:</span>
+                        <span class="cvss-value">${vuln.cvss}</span>
+                    </div>
+                    <button class="view-details-btn" onclick="openModal(${vuln.id})">
+                        View Details
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        function filterVulnerabilities() {
+            const searchTerm = document.getElementById('search-filter').value.toLowerCase();
+            const severityFilter = document.getElementById('severity-filter').value;
+            const dateFilter = document.getElementById('date-filter').value;
+
+            filteredVulnerabilities = vulnerabilities.filter(vuln => {
+                const matchesSearch = vuln.title.toLowerCase().includes(searchTerm) || 
+                                    vuln.description.toLowerCase().includes(searchTerm) ||
+                                    vuln.cve.toLowerCase().includes(searchTerm);
+                
+                const matchesSeverity = severityFilter === 'all' || vuln.severity === severityFilter;
+                
+                const matchesDate = !dateFilter || vuln.date >= dateFilter;
+
+                return matchesSearch && matchesSeverity && matchesDate;
+            });
+
+            renderVulnerabilities();
+        }
+
+        function openModal(vulnId) {
+            const vuln = vulnerabilities.find(v => v.id === vulnId);
+            if (!vuln) return;
+
+            document.getElementById('modal-title').textContent = vuln.title;
+            document.getElementById('modal-description').textContent = vuln.fullDescription;
+            document.getElementById('modal-poc').textContent = vuln.poc;
+            document.getElementById('modal-remediation').textContent = vuln.remediation;
+            
+            const referencesList = document.getElementById('modal-references');
+            referencesList.innerHTML = '';
+            vuln.references.forEach(ref => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="${ref}" target="_blank">${ref}</a>`;
+                referencesList.appendChild(li);
+            });
+
+            document.getElementById('vulnerability-modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('vulnerability-modal').classList.remove('active');
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast();
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

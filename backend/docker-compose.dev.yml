@@ -1,0 +1,78 @@
+version: '3.8'
+
+networks:
+  dev_network:
+    driver: bridge
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: infosec_postgres_dev
+    environment:
+      POSTGRES_DB: infosec_db
+      POSTGRES_USER: infosec_user
+      POSTGRES_PASSWORD: secure_password
+      POSTGRES_HOST_AUTH_METHOD: md5
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - dev_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U infosec_user -d infosec_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: infosec_redis_dev
+    command: redis-server --appendonly yes --requirepass redis_password
+    volumes:
+      - redis_dev_data:/data
+    ports:
+      - "6380:6379"
+    networks:
+      - dev_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: infosec_backend_dev
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - DATABASE_URL=postgresql://infosec_user:secure_password@postgres:5432/infosec_db
+      - REDIS_URL=redis://:redis_password@redis:6379/0
+      - SECRET_KEY=dev-secret-key
+      - DISABLE_DB=false
+    volumes:
+      - .:/app
+      - /app/__pycache__
+    ports:
+      - "5002:5000"
+    networks:
+      - dev_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    command: python minimal_app.py
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:

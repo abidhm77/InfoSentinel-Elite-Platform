@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Security | InfoSentinel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #10b981;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--gray);
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+        }
+        
+        .header {
+            background-color: white;
+            padding: 2rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: var(--gray);
+            font-size: 1rem;
+            max-width: 600px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 1rem 1.25rem;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0;
+            color: var(--dark);
+        }
+        
+        .card-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray);
+            margin-top: 0.25rem;
+        }
+        
+        .card-body {
+            padding: 1.25rem;
+        }
+        
+        .feature-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        
+        .feature-icon {
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .feature-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-description {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+            border-color: var(--primary-light);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .visualization-container {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            background-color: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .metric-card {
+            text-align: center;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255,255,255,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: var(--dark);
+            font-size: 1rem;
+        }
+        
+        .badge-live {
+            background-color: var(--success);
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .badge-live::before {
+            content: "";
+            display: inline-block;
+            width: 0.5rem;
+            height: 0.5rem;
+            background-color: white;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        
+        .table {
+            font-size: 0.875rem;
+        }
+        
+        .table th {
+            font-weight: 600;
+            color: var(--gray);
+            border-top: none;
+        }
+        
+        .progress {
+            height: 0.5rem;
+            background-color: rgba(0,0,0,0.05);
+        }
+        
+        .progress-bar {
+            background-color: var(--primary);
+        }
+        
+        .severity-high {
+            color: var(--danger);
+        }
+        
+        .severity-medium {
+            color: var(--warning);
+        }
+        
+        .severity-low {
+            color: var(--success);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Loading Quantum Security Dashboard</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <span class="text-primary">Info</span><span class="text-danger">Sentinel</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="scan.html">Scans</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="reports.html">Reports</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="ai-pentest.html">AI Pentest</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="quantum-clean.html">Quantum</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title">Quantum Security</h1>
+                    <p class="page-subtitle">Advanced security analysis using quantum-inspired algorithms</p>
+                </div>
+                <div>
+                    <button id="exportBtn" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-file-export me-1"></i> Export
+                    </button>
+                    <button id="settingsBtn" class="btn btn-primary">
+                        <i class="fas fa-cog me-1"></i> Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mb-5">
+        <!-- Overview Section -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value" id="securityScore">87</div>
+                    <div class="metric-label">Security Score</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value" id="vulnerabilities">12</div>
+                    <div class="metric-label">Vulnerabilities</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value" id="attackPaths">5</div>
+                    <div class="metric-label">Attack Paths</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <div class="metric-value" id="criticalAssets">8</div>
+                    <div class="metric-label">Critical Assets</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <h2 class="h5 mb-3">Quantum Security Features</h2>
+        <div class="row mb-4 g-3">
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="feature-icon bg-primary">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Predictive Vulnerability</h3>
+                    <p class="feature-description">Identify vulnerabilities before they can be exploited</p>
+                    <button class="btn btn-sm btn-outline-primary mt-2" data-feature="predictive">View Details</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="feature-icon bg-success">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Temporal Modeling</h3>
+                    <p class="feature-description">Analyze security posture changes over time</p>
+                    <button class="btn btn-sm btn-outline-primary mt-2" data-feature="temporal">View Details</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card feature-card">
+                    <div class="feature-icon bg-warning">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3 class="feature-title">Quantum Analysis</h3>
+                    <p class="feature-description">Test all possible attack paths simultaneously</p>
+                    <button class="btn btn-sm btn-outline-primary mt-2" data-feature="quantum">View Details</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Sections -->
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="card-title">Predictive Vulnerabilities</h2>
+                            <div class="card-subtitle">Vulnerabilities likely to emerge in the next 30 days</div>
+                        </div>
+                        <span class="badge-live">Live</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table" id="vulnerabilitiesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Vulnerability</th>
+                                        <th>Probability</th>
+                                        <th>Severity</th>
+                                        <th>Impact</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2 class="card-title">Security Posture Trend</h2>
+                        <div class="card-subtitle">Security score changes over time</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="visualization-container" id="securityTrendChart">
+                            <!-- Chart will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2 class="card-title">Attack Path Analysis</h2>
+                        <div class="card-subtitle">Quantum superposition of all possible attack vectors</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="visualization-container" id="attackPathVisualization">
+                            <!-- Visualization will be rendered here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h2 class="card-title">Critical Security Controls</h2>
+                        <div class="card-subtitle">Recommended security controls based on quantum analysis</div>
+                    </div>
+                    <div class="card-body">
+                        <div id="securityControlsList">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs" id="settingsTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab">General</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="predictive-tab" data-bs-toggle="tab" data-bs-target="#predictive" type="button" role="tab">Predictive</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="temporal-tab" data-bs-toggle="tab" data-bs-target="#temporal" type="button" role="tab">Temporal</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="quantum-tab" data-bs-toggle="tab" data-bs-target="#quantum" type="button" role="tab">Quantum</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content pt-3" id="settingsTabContent">
+                        <div class="tab-pane fade show active" id="general" role="tabpanel">
+                            <div class="mb-3">
+                                <label for="refreshInterval" class="form-label">Dashboard Refresh Interval</label>
+                                <select class="form-select" id="refreshInterval">
+                                    <option value="0">Manual refresh only</option>
+                                    <option value="30" selected>30 seconds</option>
+                                    <option value="60">1 minute</option>
+                                    <option value="300">5 minutes</option>
+                                </select>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="enableNotifications" checked>
+                                <label class="form-check-label" for="enableNotifications">Enable Notifications</label>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="predictive" role="tabpanel">
+                            <div class="mb-3">
+                                <label for="predictionWindow" class="form-label">Prediction Window</label>
+                                <select class="form-select" id="predictionWindow">
+                                    <option value="7">7 days</option>
+                                    <option value="14">14 days</option>
+                                    <option value="30" selected>30 days</option>
+                                    <option value="90">90 days</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confidenceThreshold" class="form-label">Confidence Threshold</label>
+                                <input type="range" class="form-range" min="0" max="100" value="70" id="confidenceThreshold">
+                                <div class="d-flex justify-content-between">
+                                    <small>Low (0%)</small>
+                                    <small id="confidenceValue">70%</small>
+                                    <small>High (100%)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="temporal" role="tabpanel">
+                            <div class="mb-3">
+                                <label for="timeRange" class="form-label">Time Range</label>
+                                <select class="form-select" id="timeRange">
+                                    <option value="7">Last 7 days</option>
+                                    <option value="30" selected>Last 30 days</option>
+                                    <option value="90">Last 90 days</option>
+                                    <option value="365">Last year</option>
+                                </select>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" id="showPredictions" checked>
+                                <label class="form-check-label" for="showPredictions">Show Future Predictions</label>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="quantum" role="tabpanel">
+                            <div class="mb-3">
+                                <label for="superpositionDepth" class="form-label">Superposition Depth</label>
+                                <input type="range" class="form-range" min="1" max="10" value="5" id="superpositionDepth">
+                                <div class="d-flex justify-content-between">
+                                    <small>Shallow (1)</small>
+                                    <small id="depthValue">5</small>
+                                    <small>Deep (10)</small>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="analysisMode" class="form-label">Analysis Mode</label>
+                                <select class="form-select" id="analysisMode">
+                                    <option value="balanced" selected>Balanced</option>
+                                    <option value="thorough">Thorough</option>
+                                    <option value="quick">Quick</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Detail Modal -->
+    <div class="modal fade" id="featureModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="featureModalTitle">Feature Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="featureModalBody">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script>
+        // Demo data
+        const demoData = {
+            predictive_vulnerabilities: [
+                { name: "Log4j Vulnerability", probability: 0.92, severity: 0.9, impact: "Critical" },
+                { name: "SQL Injection in Login Form", probability: 0.78, severity: 0.85, impact: "High" },
+                { name: "Cross-Site Scripting (XSS)", probability: 0.65, severity: 0.7, impact: "Medium" },
+                { name: "Insecure Direct Object Reference", probability: 0.58, severity: 0.65, impact: "Medium" },
+                { name: "Outdated TLS Configuration", probability: 0.45, severity: 0.5, impact: "Low" }
+            ],
+            security_trend: {
+                dates: ["2023-01-01", "2023-01-15", "2023-02-01", "2023-02-15", "2023-03-01", "2023-03-15", "2023-04-01"],
+                scores: [65, 68, 72, 75, 79, 83, 87]
+            },
+            attack_paths: [
+                { id: 1, name: "Phishing to Admin Access", probability: 0.75, severity: 0.9, steps: 3 },
+                { id: 2, name: "Web App to Database", probability: 0.65, severity: 0.8, steps: 4 },
+                { id: 3, name: "API Exploitation", probability: 0.55, severity: 0.7, steps: 2 },
+                { id: 4, name: "Supply Chain Attack", probability: 0.35, severity: 0.95, steps: 5 },
+                { id: 5, name: "Credential Stuffing", probability: 0.6, severity: 0.6, steps: 2 }
+            ],
+            security_controls: [
+                { name: "Multi-Factor Authentication", effectiveness: 0.95, implementation: 0.7, priority: "High" },
+                { name: "Web Application Firewall", effectiveness: 0.85, implementation: 0.8, priority: "High" },
+                { name: "Data Encryption", effectiveness: 0.9, implementation: 0.9, priority: "Medium" },
+                { name: "Security Awareness Training", effectiveness: 0.75, implementation: 0.5, priority: "High" },
+                { name: "Network Segmentation", effectiveness: 0.8, implementation: 0.6, priority: "Medium" }
+            ]
+        };
+
+        // Initialize loading animation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate loading
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                initializeDashboard();
+            }, 1500);
+            
+            // Add event listeners
+            document.getElementById('exportBtn').addEventListener('click', exportData);
+            document.getElementById('settingsBtn').addEventListener('click', openSettings);
+            document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+            
+            // Add event listeners for feature buttons
+            document.querySelectorAll('button[data-feature]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const feature = this.getAttribute('data-feature');
+                    showFeatureDetails(feature);
+                });
+            });
+            
+            // Range input listeners
+            document.getElementById('confidenceThreshold').addEventListener('input', function() {
+                document.getElementById('confidenceValue').textContent = this.value + '%';
+            });
+            
+            document.getElementById('superpositionDepth').addEventListener('input', function() {
+                document.getElementById('depthValue').textContent = this.value;
+            });
+        });
+
+        // Initialize dashboard components
+        function initializeDashboard() {
+            // Update metrics
+            document.getElementById('securityScore').textContent = demoData.security_trend.scores[demoData.security_trend.scores.length - 1];
+            document.getElementById('vulnerabilities').textContent = demoData.predictive_vulnerabilities.length;
+            document.getElementById('attackPaths').textContent = demoData.attack_paths.length;
+            document.getElementById('criticalAssets').textContent = '8'; // Demo value
+            
+            // Populate vulnerabilities table
+            const tableBody = document.getElementById('vulnerabilitiesTable').querySelector('tbody');
+            demoData.predictive_vulnerabilities.forEach(vuln => {
+                const row = document.createElement('tr');
+                
+                const nameCell = document.createElement('td');
+                nameCell.textContent = vuln.name;
+                
+                const probCell = document.createElement('td');
+                probCell.innerHTML = `
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: ${vuln.probability * 100}%" 
+                            aria-valuenow="${vuln.probability * 100}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <small class="d-block mt-1">${Math.round(vuln.probability * 100)}%</small>
+                `;
+                
+                const sevCell = document.createElement('td');
+                let sevClass = 'severity-medium';
+                if (vuln.severity > 0.8) sevClass = 'severity-high';
+                else if (vuln.severity < 0.5) sevClass = 'severity-low';
+                sevCell.innerHTML = `<span class="${sevClass}">${Math.round(vuln.severity * 10)}/10</span>`;
+                
+                const impactCell = document.createElement('td');
+                impactCell.textContent = vuln.impact;
+                
+                row.appendChild(nameCell);
+                row.appendChild(probCell);
+                row.appendChild(sevCell);
+                row.appendChild(impactCell);
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Create security trend chart
+            const ctx = document.getElementById('securityTrendChart');
+            const securityChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: demoData.security_trend.dates,
+                    datasets: [{
+                        label: 'Security Score',
+                        data: demoData.security_trend.scores,
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '/100';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Create attack path visualization
+            createAttackPathVisualization();
+            
+            // Populate security controls
+            const controlsList = document.getElementById('securityControlsList');
+            demoData.security_controls.forEach(control => {
+                const controlDiv = document.createElement('div');
+                controlDiv.className = 'mb-3';
+                
+                let priorityBadge = '';
+                if (control.priority === 'High') {
+                    priorityBadge = '<span class="badge bg-danger ms-2">High Priority</span>';
+                } else if (control.priority === 'Medium') {
+                    priorityBadge = '<span class="badge bg-warning text-dark ms-2">Medium Priority</span>';
+                }
+                
+                controlDiv.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <div><strong>${control.name}</strong> ${priorityBadge}</div>
+                        <div><small>Effectiveness: ${Math.round(control.effectiveness * 100)}%</small></div>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: ${control.implementation * 100}%" 
+                            aria-valuenow="${control.implementation * 100}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <small class="d-block mt-1">Implementation: ${Math.round(control.implementation * 100)}% complete</small>
+                `;
+                
+                controlsList.appendChild(controlDiv);
+            });
+        }
+
+        // Create attack path visualization using D3.js
+        function createAttackPathVisualization() {
+            const container = document.getElementById('attackPathVisualization');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            
+            // Create SVG
+            const svg = d3.select(container)
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+            
+            // Create nodes and links
+            const nodes = demoData.attack_paths.map(path => ({
+                id: path.id,
+                name: path.name,
+                probability: path.probability,
+                severity: path.severity,
+                steps: path.steps
+            }));
+            
+            // Create links between nodes
+            const links = [];
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    if (Math.random() > 0.5) {
+                        links.push({
+                            source: i,
+                            target: j,
+                            value: Math.random()
+                        });
+                    }
+                }
+            }
+            
+            // Create force simulation
+            const simulation = d3.forceSimulation(nodes)
+                .force("link", d3.forceLink(links).id(d => d.id).distance(100))
+                .force("charge", d3.forceManyBody().strength(-200))
+                .force("center", d3.forceCenter(width / 2, height / 2));
+            
+            // Add links
+            const link = svg.append("g")
+                .selectAll("line")
+                .data(links)
+                .enter().append("line")
+                .attr("stroke", "#ccc")
+                .attr("stroke-opacity", 0.6)
+                .attr("stroke-width", d => Math.sqrt(d.value) * 2);
+            
+            // Add nodes
+            const node = svg.append("g")
+                .selectAll("circle")
+                .data(nodes)
+                .enter().append("circle")
+                .attr("r", d => 5 + d.probability * 10)
+                .attr("fill", d => d3.interpolateReds(d.severity))
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+            
+            // Add node labels
+            const label = svg.append("g")
+                .selectAll("text")
+                .data(nodes)
+                .enter().append("text")
+                .text(d => d.name)
+                .attr("font-size", 10)
+                .attr("dx", 12)
+                .attr("dy", 4);
+            
+            // Update positions on simulation tick
+            simulation.on("tick", () => {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+                
+                node
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y);
+                
+                label
+                    .attr("x", d => d.x)
+                    .attr("y", d => d.y);
+            });
+            
+            // Drag functions
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+            
+            function dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+            
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+        }
+
+        // Export data function
+        function exportData() {
+            // Show loading state
+            const exportBtn = document.getElementById('exportBtn');
+            const originalText = exportBtn.innerHTML;
+            exportBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Exporting...';
+            exportBtn.disabled = true;
+            
+            // Simulate export process
+            setTimeout(() => {
+                // Create export data
+                const exportData = {
+                    timestamp: new Date().toISOString(),
+                    securityScore: parseInt(document.getElementById('securityScore').textContent),
+                    vulnerabilities: demoData.predictive_vulnerabilities,
+                    securityTrend: demoData.security_trend,
+                    attackPaths: demoData.attack_paths,
+                    securityControls: demoData.security_controls
+                };
+                
+                // Convert to JSON
+                const jsonData = JSON.stringify(exportData, null, 2);
+                
+                // Create blob and download link
+                const blob = new Blob([jsonData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                // Create download link
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `quantum-security-report-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                
+                // Clean up
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // Reset button
+                exportBtn.innerHTML = originalText;
+                exportBtn.disabled = false;
+                
+                // Show success notification
+                showNotification('Export Complete', 'Report has been successfully exported.');
+            }, 1500);
+        }
+
+        // Open settings modal
+        function openSettings() {
+            const settingsModal = new bootstrap.Modal(document.getElementById('settingsModal'));
+            settingsModal.show();
+        }
+
+        // Save settings
+        function saveSettings() {
+            // Get settings values
+            const refreshInterval = document.getElementById('refreshInterval').value;
+            const enableNotifications = document.getElementById('enableNotifications').checked;
+            const predictionWindow = document.getElementById('predictionWindow').value;
+            const confidenceThreshold = document.getElementById('confidenceThreshold').value;
+            const timeRange = document.getElementById('timeRange').value;
+            const showPredictions = document.getElementById('showPredictions').checked;
+            const superpositionDepth = document.getElementById('superpositionDepth').value;
+            const analysisMode = document.getElementById('analysisMode').value;
+            
+            // Log settings (would save to backend in real implementation)
+            console.log('Settings saved:', {
+                refreshInterval,
+                enableNotifications,
+                predictionWindow,
+                confidenceThreshold,
+                timeRange,
+                showPredictions,
+                superpositionDepth,
+                analysisMode
+            });
+            
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('settingsModal')).hide();
+            
+            // Show success notification
+            showNotification('Settings Saved', 'Your settings have been successfully updated.');
+        }
+
+        // Show feature details
+        function showFeatureDetails(feature) {
+            const modal = new bootstrap.Modal(document.getElementById('featureModal'));
+            const modalTitle = document.getElementById('featureModalTitle');
+            const modalBody = document.getElementById('featureModalBody');
+            
+            switch(feature) {
+                case 'predictive':
+                    modalTitle.textContent = 'Predictive Vulnerability Discovery';
+                    modalBody.innerHTML = `
+                        <p>Our predictive vulnerability system uses advanced machine learning algorithms to identify potential security vulnerabilities before they can be exploited.</p>
+                        <h6>Key Benefits:</h6>
+                        <ul>
+                            <li>Early detection of emerging threats</li>
+                            <li>Prioritization based on probability and impact</li>
+                            <li>Continuous learning from global threat intelligence</li>
+                        </ul>
+                        <div class="alert alert-info">
+                            <strong>Pro Tip:</strong> Configure the prediction window and confidence threshold in Settings to fine-tune predictions for your environment.
+                        </div>
+                    `;
+                    break;
+                case 'temporal':
+                    modalTitle.textContent = 'Temporal Security Modeling';
+                    modalBody.innerHTML = `
+                        <p>Temporal modeling analyzes how your security posture changes over time, identifying trends and predicting future security states.</p>
+                        <h6>Key Benefits:</h6>
+                        <ul>
+                            <li>Visualize security posture trends</li>
+                            <li>Identify critical time points that affected security</li>
+                            <li>Forecast future security states based on current trends</li>
+                        </ul>
+                        <div class="alert alert-info">
+                            <strong>Pro Tip:</strong> Enable "Show Future Predictions" in Settings to see forecasted security scores for the next 30 days.
+                        </div>
+                    `;
+                    break;
+                case 'quantum':
+                    modalTitle.textContent = 'Quantum Security Analysis';
+                    modalBody.innerHTML = `
+                        <p>Our quantum-inspired algorithms test all possible attack paths simultaneously, identifying the most likely routes attackers would take to compromise your systems.</p>
+                        <h6>Key Benefits:</h6>
+                        <ul>
+                            <li>Comprehensive analysis of all attack vectors</li>
+                            <li>Identification of critical security controls</li>
+                            <li>Prioritization of security investments based on effectiveness</li>
+                        </ul>
+                        <div class="alert alert-info">
+                            <strong>Pro Tip:</strong> Adjust the "Superposition Depth" in Settings to control how deeply the system analyzes potential attack paths.
+                        </div>
+                    `;
+                    break;
+            }
+            
+            modal.show();
+        }
+
+        // Show notification
+        function showNotification(title, message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'position-fixed bottom-0 end-0 p-3';
+            notification.style.zIndex = '5';
+            notification.innerHTML = `
+                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <strong class="me-auto">${title}</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            `;
+            
+            // Add to document
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

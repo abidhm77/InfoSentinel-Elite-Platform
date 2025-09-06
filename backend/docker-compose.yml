@@ -1,0 +1,399 @@
+version: '3.8'
+
+networks:
+  infosec_network:
+    driver: bridge
+  cyber-range:
+    driver: bridge
+    internal: true
+    enable_ipv6: false
+    labels:
+      com.security.zone: isolated
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/24
+          gateway: 172.22.0.1
+          ip_range: 172.22.0.128/25
+    attachable: false
+
+services:
+  traffic-mirror:
+    image: alpine/socat
+    networks:
+      - cyber-range
+    command: "TCP-LISTEN:8080,fork,reuseaddr TCP:analysis-engine:8080"
+    cap_add:
+      - NET_ADMIN
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+
+  honeypot-ssh:
+    image: dionach/cmdly
+    networks:
+      - cyber-range
+    ports:
+      - "2222:2222"
+    environment:
+      - DECOY_TYPE=SSH
+    labels:
+      - deception.tier=1
+
+  analysis-engine:
+    image: elastic/filebeat:8.9.1
+    networks:
+      - cyber-range
+    volumes:
+      - ./mirrored-traffic:/usr/share/filebeat/data
+    environment:
+      - OUTPUT_HOST=logstash
+      - OUTPUT_PORT=5044
+
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: infosec_postgres
+    environment:
+      POSTGRES_DB: infosec_db
+      POSTGRES_USER: infosec_user
+      POSTGRES_PASSWORD: secure_password
+      POSTGRES_HOST_AUTH_METHOD: md5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - infosec_network
+      - cyber-range
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U infosec_user -d infosec_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache and Session Store
+  redis:
+    image: redis:7-alpine
+    container_name: infosec_redis
+    command: redis-server --appendonly yes --requirepass redis_password
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - infosec_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # FastAPI Application
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: infosec_api
+    environment:
+      - DATABASE_URL=postgresql://infosec_user:secure_password@postgres:5432/infosec_db
+      - REDIS_URL=redis://:redis_password@redis:6379/0
+      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-in-production
+      - ALLOWED_HOSTS=localhost,127.0.0.1,api
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8000
+      - UPLOAD_DIR=/app/uploads
+      - MAX_FILE_SIZE=10485760
+      - PYTHONPATH=/app
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    ports:
+      - "8000:8000"
+    networks:
+      - infosec_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Celery Worker for Background Tasks
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: infosec_celery_worker
+    command: celery -A main_api.celery worker --loglevel=info --concurrency=4
+    environment:
+      - DATABASE_URL=postgresql://infosec_user:secure_password@postgres:5432/infosec_db
+      - REDIS_URL=redis://:redis_password@redis:6379/0
+      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-in-production
+      - PYTHONPATH=/app
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    networks:
+      - infosec_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Celery Beat for Scheduled Tasks
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: infosec_celery_beat
+    command: celery -A main_api.celery beat --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://infosec_user:secure_password@postgres:5432/infosec_db
+      - REDIS_URL=redis://:redis_password@redis:6379/0
+      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-in-production
+      - PYTHONPATH=/app
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    networks:
+      - infosec_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Flower for Celery Monitoring
+  flower:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: infosec_flower
+    command: celery -A main_api.celery flower --port=5555
+    environment:
+      - DATABASE_URL=postgresql://infosec_user:secure_password@postgres:5432/infosec_db
+      - REDIS_URL=redis://:redis_password@redis:6379/0
+      - PYTHONPATH=/app
+    ports:
+      - "5555:5555"
+    networks:
+      - infosec_network
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  # OWASP ZAP for Web Application Scanning
+  zap:
+    image: owasp/zap2docker-stable
+    container_name: infosec_zap
+    command: zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true
+    ports:
+      - "8080:8080"
+    networks:
+      - infosec_network
+    restart: unless-stopped
+    volumes:
+      - zap_data:/zap/wrk
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: infosec_nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - infosec_network
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # Prometheus for Metrics
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: infosec_prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - infosec_network
+    restart: unless-stopped
+
+  # Grafana for Visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: infosec_grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    ports:
+      - "3001:3000"
+    networks:
+      - infosec_network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # Elasticsearch for Log Storage
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: infosec_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - infosec_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Kibana for Log Visualization
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: infosec_kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - infosec_network
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Logstash for Log Processing
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.11.0
+    container_name: infosec_logstash
+    volumes:
+      - ./logstash/config:/usr/share/logstash/config:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./logs:/app/logs:ro
+    networks:
+      - infosec_network
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Jaeger for Distributed Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: infosec_jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    networks:
+      - infosec_network
+    restart: unless-stopped
+
+  # MinIO for Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: infosec_minio
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin123
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - infosec_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Vault for Secrets Management
+  vault:
+    image: vault:latest
+    container_name: infosec_vault
+    cap_add:
+      - IPC_LOCK
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=myroot
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
+    ports:
+      - "8200:8200"
+    networks:
+      - infosec_network
+    restart: unless-stopped
+
+  # Consul for Service Discovery
+  consul:
+    image: consul:latest
+    container_name: infosec_consul
+    command: agent -server -ui -node=server-1 -bootstrap-expect=1 -client=0.0.0.0
+    ports:
+      - "8500:8500"
+    networks:
+      - infosec_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+  grafana_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  minio_data:
+    driver: local
+  zap_data:
+    driver: local
+
+networks:
+  infosec_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

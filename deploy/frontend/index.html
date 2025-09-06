@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfoSentinel - Elite Cybersecurity Platform</title>
+  <link rel="stylesheet" href="enterprise.css?v=1.0">
+  <link rel="stylesheet" href="cyber-design-system.css?v=3.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Enhanced Cyber Design Integration */
+    .error-message {
+      color: var(--cyber-accent);
+      background: rgba(255, 51, 102, 0.1);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--cyber-accent);
+      margin-bottom: var(--space-md);
+      backdrop-filter: blur(10px);
+    }
+    
+    .success-message {
+      color: var(--cyber-primary);
+      background: rgba(0, 255, 136, 0.1);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--cyber-primary);
+      margin-bottom: var(--space-md);
+      backdrop-filter: blur(10px);
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid rgba(0, 255, 136, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--cyber-primary);
+      animation: spin 1s ease-in-out infinite;
+      margin-left: var(--space-sm);
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .cyber-loading-pulse {
+      animation: cyber-pulse 1.5s infinite;
+    }
+    
+    /* Mobile menu toggle */
+    .mobile-menu-toggle {
+      display: none;
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 100;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.5rem;
+      cursor: pointer;
+    }
+    
+    @media (max-width: 768px) {
+      .mobile-menu-toggle {
+        display: block;
+      }
+    }
+    
+    /* Welcome screen */
+    .welcome-screen {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .welcome-logo {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .welcome-subtitle {
+      font-size: 1.25rem;
+      color: var(--gray-600);
+      margin-bottom: 2rem;
+    }
+    
+    /* Login/Register forms */
+    .auth-container {
+      max-width: 400px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .auth-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+    
+    .auth-subtitle {
+      color: var(--gray-500);
+      font-size: 0.875rem;
+    }
+    
+    .auth-form .form-group:last-child {
+      margin-bottom: 0;
+    }
+    
+    .auth-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.875rem;
+      color: var(--gray-500);
+    }
+    
+    .auth-footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+    
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+    
+    .tabs {
+      display: flex;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid #ddd;
+    }
+    .tab {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-weight: 600;
+    }
+    .tab.active {
+      border-bottom-color: #3a7bd5;
+      color: #3a7bd5;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    
+    /* Enterprise UI enhancements */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+    }
+    
+    .stat-icon.primary { background: var(--primary); }
+    .stat-icon.success { background: var(--success); }
+    .stat-icon.warning { background: var(--warning); }
+    .stat-icon.danger { background: var(--danger); }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+      color: var(--gray-500);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body class="app-container">
+  <!-- Removed particle effects for performance optimization -->
+  
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 16V8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M12 7V7.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        InfoSentinel
+      </div>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Overview</div>
+        <a href="#" class="nav-item active" data-tab="dashboard">
+          <i class="fas fa-tachometer-alt nav-item-icon"></i>
+          Dashboard
+        </a>
+        <a href="#" class="nav-item" data-tab="scans">
+          <i class="fas fa-search nav-item-icon"></i>
+          Security Scans
+        </a>
+        <a href="scan.html" class="nav-item">
+          <i class="fas fa-shield-virus nav-item-icon"></i>
+          Pro Scan
+        </a>
+        <a href="#" class="nav-item" data-tab="vulnerabilities">
+          <i class="fas fa-bug nav-item-icon"></i>
+          Vulnerabilities
+        </a>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Management</div>
+        <a href="#" class="nav-item" data-tab="assets">
+          <i class="fas fa-server nav-item-icon"></i>
+          Assets
+        </a>
+        <a href="reports.html" class="nav-item">
+  <i class="fas fa-file-alt nav-item-icon"></i>
+  Reports
+</a>
+        <a href="#" class="nav-item" data-tab="compliance">
+          <i class="fas fa-shield-alt nav-item-icon"></i>
+          Compliance
+        </a>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Account</div>
+        <a href="#" class="nav-item" data-tab="profile">
+          <i class="fas fa-user nav-item-icon"></i>
+          Profile
+        </a>
+        <a href="#" class="nav-item" data-tab="settings">
+          <i class="fas fa-cog nav-item-icon"></i>
+          Settings
+        </a>
+        <a href="#" class="nav-item" id="logout-btn">
+          <i class="fas fa-sign-out-alt nav-item-icon"></i>
+          Logout
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="cyber-container" id="main-content" style="padding-top: var(--space-lg);">
+    <header class="cyber-animate-slide-up" style="margin-bottom: var(--space-2xl);">
+      <div class="cyber-flex cyber-items-center cyber-justify-between" style="margin-bottom: var(--space-lg);">
+        <div>
+          <h1 style="font-family: var(--font-mono); font-size: var(--text-5xl); font-weight: var(--font-bold); color: var(--text-primary); margin-bottom: var(--space-sm);">INFOSENT<span style="color: var(--cyber-primary);">INEL</span></h1>
+          <p style="color: var(--text-secondary); font-size: var(--text-lg);">Elite Cybersecurity Command & Control Platform</p>
+        </div>
+        <div class="cyber-flex cyber-items-center cyber-gap-md">
+          <div class="cyber-badge cyber-badge-secure cyber-animate-pulse">OPERATIONAL</div>
+          <div style="color: var(--cyber-primary); font-size: var(--text-2xl);">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+        </div>
+      </div>
+      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, transparent, var(--cyber-primary), var(--cyber-secondary), transparent);"></div>
+    </header>
+
+    <nav class="cyber-flex cyber-gap-md cyber-animate-slide-in" style="margin-bottom: var(--space-2xl);">
+      <button class="cyber-btn cyber-btn-primary tab active" data-tab="home">
+        <i class="fas fa-home" style="margin-right: var(--space-sm);"></i>
+        COMMAND CENTER
+      </button>
+      <button class="cyber-btn cyber-btn-secondary tab" data-tab="dashboard">
+        <i class="fas fa-chart-line" style="margin-right: var(--space-sm);"></i>
+        THREAT INTELLIGENCE
+      </button>
+      <button class="cyber-btn cyber-btn-ghost tab" data-tab="login">
+        <i class="fas fa-sign-in-alt" style="margin-right: var(--space-sm);"></i>
+        ACCESS CONTROL
+      </button>
+      <button class="cyber-btn cyber-btn-ghost tab" data-tab="register">
+        <i class="fas fa-user-plus" style="margin-right: var(--space-sm);"></i>
+        OPERATOR REGISTRY
+      </button>
+      <button class="cyber-btn cyber-btn-ghost tab hidden" data-tab="profile" id="profile-tab">
+        <i class="fas fa-user-shield" style="margin-right: var(--space-sm);"></i>
+        PROFILE
+      </button>
+    </nav>
+
+  <div id="home" class="tab-content active">
+    <div class="cyber-animate-slide-up">
+      <div class="cyber-card" style="margin-bottom: var(--space-2xl); text-align: center;">
+        <h2 style="font-family: var(--font-mono); font-size: var(--text-3xl); color: var(--cyber-primary); margin-bottom: var(--space-lg);">MISSION BRIEFING</h2>
+        <p style="font-size: var(--text-lg); color: var(--text-secondary); line-height: var(--leading-relaxed);">Advanced cybersecurity platform engineered for elite security operations. Deploy comprehensive threat assessment protocols across web applications, network infrastructure, mobile ecosystems, and IoT environments.</p>
+      </div>
+      
+      <div class="cyber-grid-3" style="margin-bottom: var(--space-2xl);">
+        <div class="cyber-card cyber-animate-slide-up" style="animation-delay: 0.1s;">
+          <div class="cyber-flex cyber-items-center cyber-gap-md" style="margin-bottom: var(--space-md);">
+            <div style="color: var(--cyber-primary); font-size: var(--text-2xl);">
+              <i class="fas fa-globe"></i>
+            </div>
+            <h3 style="color: var(--text-primary); font-family: var(--font-mono);">WEB ASSAULT PROTOCOLS</h3>
+          </div>
+          <p style="color: var(--text-secondary);">Advanced XSS, SQL injection, CSRF exploitation with OWASP Top 10 compliance validation.</p>
+        </div>
+        
+        <div class="cyber-card cyber-animate-slide-up" style="animation-delay: 0.2s;">
+          <div class="cyber-flex cyber-items-center cyber-gap-md" style="margin-bottom: var(--space-md);">
+            <div style="color: var(--cyber-secondary); font-size: var(--text-2xl);">
+              <i class="fas fa-network-wired"></i>
+            </div>
+            <h3 style="color: var(--text-primary); font-family: var(--font-mono);">NETWORK RECONNAISSANCE</h3>
+          </div>
+          <p style="color: var(--text-secondary);">Deep packet inspection, port enumeration, and infrastructure vulnerability mapping.</p>
+        </div>
+        
+        <div class="cyber-card cyber-animate-slide-up" style="animation-delay: 0.3s;">
+          <div class="cyber-flex cyber-items-center cyber-gap-md" style="margin-bottom: var(--space-md);">
+            <div style="color: var(--cyber-warning); font-size: var(--text-2xl);">
+              <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h3 style="color: var(--text-primary); font-family: var(--font-mono);">MOBILE & IOT WARFARE</h3>
+          </div>
+          <p style="color: var(--text-secondary);">APK/IPA analysis, IoT device exploitation, and automotive system penetration.</p>
+        </div>
+        
+        <div class="cyber-card cyber-animate-slide-up" style="animation-delay: 0.4s;">
+          <div class="cyber-flex cyber-items-center cyber-gap-md" style="margin-bottom: var(--space-md);">
+            <div style="color: var(--cyber-accent); font-size: var(--text-2xl);">
+              <i class="fas fa-atom"></i>
+            </div>
+            <h3 style="color: var(--text-primary); font-family: var(--font-mono);">QUANTUM RESISTANCE</h3>
+          </div>
+          <p style="color: var(--text-secondary);">Post-quantum cryptography assessment and future-proof security validation.</p>
+        </div>
+        
+        <div class="cyber-card cyber-animate-slide-up" style="animation-delay: 0.5s;">
+          <div class="cyber-flex cyber-items-center cyber-gap-md" style="margin-bottom: var(--space-md);">
+            <div style="color: var(--cyber-info); font-size: var(--text-2xl);">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3 style="color: var(--text-primary); font-family: var(--font-mono);">THREAT INTELLIGENCE</h3>
+          </div>
+          <p style="color: var(--text-secondary);">Real-time monitoring, predictive analytics, and executive-level reporting.</p>
+        </div>
+        
+        <div class="cyber-card cyber-animate-slide-up" style="animation-delay: 0.6s;">
+          <div class="cyber-flex cyber-items-center cyber-gap-md" style="margin-bottom: var(--space-md);">
+            <div style="color: var(--status-secure); font-size: var(--text-2xl);">
+              <i class="fas fa-shield-check"></i>
+            </div>
+            <h3 style="color: var(--text-primary); font-family: var(--font-mono);">COMPLIANCE MATRIX</h3>
+          </div>
+          <p style="color: var(--text-secondary);">Automated mapping to OWASP, CWE, CVE, and enterprise compliance frameworks.</p>
+        </div>
+      </div>
+
+      <div class="cyber-flex cyber-justify-center" style="margin-top: var(--space-2xl);">
+        <button class="cyber-btn cyber-btn-primary cyber-btn-lg cyber-animate-glow" onclick="document.querySelector('.tab[data-tab=\'dashboard\']').click()">
+          <i class="fas fa-rocket" style="margin-right: var(--space-sm);"></i>
+          INITIATE THREAT INTELLIGENCE
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dashboard" class="tab-content">
+    <div class="cyber-animate-slide-up">
+      <div class="cyber-flex cyber-items-center cyber-justify-between" style="margin-bottom: var(--space-2xl);">
+        <h2 style="font-family: var(--font-mono); font-size: var(--text-3xl); color: var(--cyber-primary);">THREAT INTELLIGENCE CENTER</h2>
+        <div class="cyber-flex cyber-items-center cyber-gap-md">
+          <div class="cyber-badge cyber-badge-secure cyber-animate-pulse">LIVE</div>
+          <div style="color: var(--cyber-primary); font-size: var(--text-lg);">
+            <i class="fas fa-satellite-dish"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="cyber-grid-4" id="stats-container" style="margin-bottom: var(--space-2xl);">
+        <div class="cyber-card cyber-animate-slide-up" style="animation-delay: 0.1s;">
+          <div class="cyber-flex cyber-items-center cyber-justify-between" style="margin-bottom: var(--space-md);">
+            <div style="color: var(--cyber-secondary); font-size: var(--text-2xl);">
+              <i class="fas fa-crosshairs"></i>
+            </div>
+            <div class="cyber-badge cyber-badge-low">ACTIVE</div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: var(--text-3xl); font-weight: var(--font-bold); color: var(--text-primary);" id="total-scans">-</div>
+          <div style="color: var(--text-secondary); font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.1em;">OPERATIONS EXECUTED</div>
+        </div>
+        
+        <div class="cyber-card cyber-animate-slide-up" style="animation-delay: 0.2s;">
+          <div class="cyber-flex cyber-items-center cyber-justify-between" style="margin-bottom: var(--space-md);">
+            <div style="color: var(--cyber-accent); font-size: var(--text-2xl);">
+              <i class="fas fa-bug"></i>
+            </div>
+            <div class="cyber-badge cyber-badge-high">DETECTED</div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: var(--text-3xl); font-weight: var(--font-bold); color: var(--text-primary);" id="total-vulnerabilities">-</div>
+          <div style="color: var(--text-secondary); font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.1em;">THREATS IDENTIFIED</div>
+        </div>
+        
+        <div class="cyber-card cyber-animate-slide-up cyber-animate-pulse" style="animation-delay: 0.3s;">
+          <div class="cyber-flex cyber-items-center cyber-justify-between" style="margin-bottom: var(--space-md);">
+            <div style="color: var(--status-critical); font-size: var(--text-2xl);">
+              <i class="fas fa-radiation"></i>
+            </div>
+            <div class="cyber-badge cyber-badge-critical">CRITICAL</div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: var(--text-3xl); font-weight: var(--font-bold); color: var(--status-critical);" id="high-severity">-</div>
+          <div style="color: var(--text-secondary); font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.1em;">HIGH SEVERITY</div>
+        </div>
+        
+        <div class="cyber-card cyber-animate-slide-up" style="animation-delay: 0.4s;">
+          <div class="cyber-flex cyber-items-center cyber-justify-between" style="margin-bottom: var(--space-md);">
+            <div style="color: var(--cyber-warning); font-size: var(--text-2xl);">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="cyber-badge cyber-badge-medium">MEDIUM</div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: var(--text-3xl); font-weight: var(--font-bold); color: var(--text-primary);" id="medium-severity">-</div>
+          <div style="color: var(--text-secondary); font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.1em;">MEDIUM SEVERITY</div>
+        </div>
+      </div>
+
+      <div class="cyber-grid-2" style="gap: var(--space-xl); margin-bottom: var(--space-2xl);">
+        <div class="cyber-card cyber-animate-slide-up" style="animation-delay: 0.5s;">
+          <div class="cyber-card-header">
+            <h3 class="cyber-card-title">
+              <i class="fas fa-chart-line" style="color: var(--cyber-info); margin-right: var(--space-sm);"></i>
+              THREAT EVOLUTION MATRIX
+            </h3>
+            <div class="cyber-flex cyber-gap-sm">
+              <button class="cyber-btn cyber-btn-sm cyber-btn-secondary">
+                <i class="fas fa-calendar" style="margin-right: var(--space-xs);"></i>
+                30 DAYS
+              </button>
+            </div>
+          </div>
+          <div style="height: 300px; background: var(--bg-secondary); border-radius: var(--radius-md); padding: var(--space-md); position: relative;">
+            <canvas id="vulnerabilityTrendsChart" style="width: 100%; height: 100%;"></canvas>
+            <div style="position: absolute; top: var(--space-sm); right: var(--space-sm); color: var(--cyber-primary); font-size: var(--text-xs); font-family: var(--font-mono);">REAL-TIME</div>
+          </div>
+        </div>
+        
+        <div class="cyber-card cyber-animate-slide-up" style="animation-delay: 0.6s;">
+          <div class="cyber-card-header">
+            <h3 class="cyber-card-title">
+              <i class="fas fa-shield-virus" style="color: var(--cyber-accent); margin-right: var(--space-sm);"></i>
+              ATTACK VECTOR ANALYSIS
+            </h3>
+          </div>
+          <div class="cyber-flex cyber-flex-col cyber-gap-md">
+            <div class="cyber-flex cyber-items-center cyber-justify-between" style="padding: var(--space-sm); background: var(--bg-tertiary); border-radius: var(--radius-md);">
+              <span style="color: var(--text-secondary);">SQL Injection</span>
+              <div class="cyber-flex cyber-items-center cyber-gap-sm">
+                <div style="width: 100px; height: 4px; background: var(--bg-secondary); border-radius: var(--radius-full); overflow: hidden;">
+                  <div style="width: 75%; height: 100%; background: var(--cyber-accent);"></div>
+                </div>
+                <span style="color: var(--cyber-accent); font-family: var(--font-mono); font-size: var(--text-sm);">75%</span>
+              </div>
+            </div>
+            <div class="cyber-flex cyber-items-center cyber-justify-between" style="padding: var(--space-sm); background: var(--bg-tertiary); border-radius: var(--radius-md);">
+              <span style="color: var(--text-secondary);">Cross-Site Scripting</span>
+              <div class="cyber-flex cyber-items-center cyber-gap-sm">
+                <div style="width: 100px; height: 4px; background: var(--bg-secondary); border-radius: var(--radius-full); overflow: hidden;">
+                  <div style="width: 60%; height: 100%; background: var(--cyber-warning);"></div>
+                </div>
+                <span style="color: var(--cyber-warning); font-family: var(--font-mono); font-size: var(--text-sm);">60%</span>
+              </div>
+            </div>
+            <div class="cyber-flex cyber-items-center cyber-justify-between" style="padding: var(--space-sm); background: var(--bg-tertiary); border-radius: var(--radius-md);">
+              <span style="color: var(--text-secondary);">Authentication Bypass</span>
+              <div class="cyber-flex cyber-items-center cyber-gap-sm">
+                <div style="width: 100px; height: 4px; background: var(--bg-secondary); border-radius: var(--radius-full); overflow: hidden;">
+                  <div style="width: 45%; height: 100%; background: var(--cyber-secondary);"></div>
+                </div>
+                <span style="color: var(--cyber-secondary); font-family: var(--font-mono); font-size: var(--text-sm);">45%</span>
+              </div>
+            </div>
+            <div class="cyber-flex cyber-items-center cyber-justify-between" style="padding: var(--space-sm); background: var(--bg-tertiary); border-radius: var(--radius-md);">
+              <span style="color: var(--text-secondary);">Privilege Escalation</span>
+              <div class="cyber-flex cyber-items-center cyber-gap-sm">
+                <div style="width: 100px; height: 4px; background: var(--bg-secondary); border-radius: var(--radius-full); overflow: hidden;">
+                  <div style="width: 30%; height: 100%; background: var(--cyber-primary);"></div>
+                </div>
+                <span style="color: var(--cyber-primary); font-family: var(--font-mono); font-size: var(--text-sm);">30%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scan Results Table -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Recent Scan Results</h3>
+          <div class="table-actions">
+            <div class="search-container">
+              <i class="fas fa-search"></i>
+              <input type="text" id="scanResultsSearch" placeholder="Search scans..." onkeyup="filterScanResults()">
+            </div>
+            <div class="filter-container">
+              <button class="btn-filter" onclick="toggleFilterDropdown()">
+                <i class="fas fa-filter"></i> Filter
+              </button>
+              <div id="filterDropdown" class="filter-dropdown">
+                <div class="filter-group">
+                  <label>Status</label>
+                  <div class="checkbox-list">
+                    <label class="checkbox-container">
+                      <input type="checkbox" checked value="Completed"> Completed
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="checkbox-container">
+                      <input type="checkbox" checked value="In Progress"> In Progress
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="checkbox-container">
+                      <input type="checkbox" checked value="Failed"> Failed
+                      <span class="checkmark"></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="filter-group">
+                  <label>Date Range</label>
+                  <div class="date-range">
+                    <input type="date" class="date-input">
+                    <span>to</span>
+                    <input type="date" class="date-input">
+                  </div>
+                </div>
+                <div class="filter-actions">
+                  <button class="btn-sm" onclick="applyFilters()">Apply</button>
+                  <button class="btn-sm btn-outline" onclick="resetFilters()">Reset</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-interactive">
+              <thead>
+                <tr>
+                  <th onclick="sortTable(0)">Target <i class="fas fa-sort"></i></th>
+                  <th onclick="sortTable(1)">Type <i class="fas fa-sort"></i></th>
+                  <th onclick="sortTable(2)">Status <i class="fas fa-sort"></i></th>
+                  <th onclick="sortTable(3)">Start Time <i class="fas fa-sort"></i></th>
+                  <th onclick="sortTable(4)">Vulnerabilities <i class="fas fa-sort"></i></th>
+                </tr>
+              </thead>
+              <tbody id="scans-table-body">
+                <tr>
+                  <td colspan="5" style="text-align: center;">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-pagination">
+            <span class="pagination-info">Showing <b>1-5</b> of <b>12</b> results</span>
+            <div class="pagination-controls">
+              <button class="btn-icon" disabled><i class="fas fa-chevron-left"></i></button>
+              <button class="btn-page active">1</button>
+              <button class="btn-page">2</button>
+              <button class="btn-page">3</button>
+              <button class="btn-icon"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="login" class="tab-content">
+    <div class="auth-container">
+      <div class="auth-header">
+        <div class="auth-logo">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h2 class="auth-title">Welcome to InfoSentinel</h2>
+        <p class="auth-subtitle">Enterprise Security Platform</p>
+      </div>
+      <div id="login-error" class="error-message hidden"></div>
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user"></i>
+            <input type="text" id="username" name="username" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" name="password" required>
+          </div>
+        </div>
+        <div class="form-options">
+          <label class="checkbox-container">
+            <input type="checkbox" checked="checked">
+            <span class="checkmark"></span>
+            Remember me
+          </label>
+          <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
+        <button type="submit" class="cta" id="login-button">
+          Sign In
+          <span class="loading hidden" id="login-loading"></span>
+        </button>
+      </form>
+      <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem;">
+        Demo credentials: username: <strong>admin</strong>, password: <strong>admin123</strong>
+      </p>
+      <div class="auth-footer">
+        <p>Don't have an account? <a href="#" onclick="document.querySelector('.tab[data-tab=\'register\']').click(); return false;">Create Account</a></p>
+      </div>
+    </div>
+  </div>
+  
+  <div id="register" class="tab-content">
+    <div class="auth-container">
+      <div class="auth-header">
+        <div class="auth-logo">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h2 class="auth-title">Create Account</h2>
+        <p class="auth-subtitle">Join InfoSentinel Security Platform</p>
+      </div>
+      <div id="register-error" class="error-message hidden"></div>
+      <div id="register-success" class="success-message hidden"></div>
+      <form id="register-form" class="auth-form">
+        <div class="form-group">
+          <label for="reg-username">Username</label>
+          <div class="input-with-icon">
+            <i class="fas fa-user"></i>
+            <input type="text" id="reg-username" name="username" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email</label>
+          <div class="input-with-icon">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="reg-email" name="email" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="reg-password" name="password" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reg-confirm-password">Confirm Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="reg-confirm-password" name="confirm-password" required>
+          </div>
+        </div>
+        <button type="submit" class="cta" id="register-button">
+          Register
+          <span class="loading hidden" id="register-loading"></span>
+        </button>
+      </form>
+      <div class="auth-footer">
+        <p>Already have an account? <a href="#" onclick="document.querySelector('.tab[data-tab=\'login\']').click(); return false;">Login here</a></p>
+      </div>
+    </div>
+  </div>
+  
+  <div id="profile" class="tab-content">
+    <div class="dashboard">
+      <h2>User Profile</h2>
+      <div id="profile-content">
+        <div class="profile-info">
+          <p><strong>Username:</strong> <span id="profile-username">-</span></p>
+          <p><strong>Email:</strong> <span id="profile-email">-</span></p>
+          <p><strong>Role:</strong> <span id="profile-role">-</span></p>
+          <p><strong>Member Since:</strong> <span id="profile-created">-</span></p>
+        </div>
+        <button class="cta" id="logout-button">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2023 InfoSentinel. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // API URL
+    const API_URL = 'http://localhost:5001';
+    
+    // Auth token management
+    const AUTH_TOKEN_KEY = 'infosentinel_auth_token';
+    const USER_DATA_KEY = 'infosentinel_user_data';
+    
+    // Get auth token from localStorage
+    function getAuthToken() {
+      return localStorage.getItem(AUTH_TOKEN_KEY);
+    }
+    
+    // Set auth token in localStorage
+    function setAuthToken(token) {
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
+    }
+    
+    // Remove auth token from localStorage
+    function removeAuthToken() {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      localStorage.removeItem(USER_DATA_KEY);
+    }
+    
+    // Get user data from localStorage
+    function getUserData() {
+      const userData = localStorage.getItem(USER_DATA_KEY);
+      return userData ? JSON.parse(userData) : null;
+    }
+    
+    // Set user data in localStorage
+    function setUserData(userData) {
+      localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
+    }
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return !!getAuthToken();
+    }
+    
+    // Update UI based on authentication status
+    function updateAuthUI() {
+      const isLoggedIn = isAuthenticated();
+      const profileTab = document.getElementById('profile-tab');
+      
+      if (isLoggedIn) {
+        profileTab.classList.remove('hidden');
+        document.querySelectorAll('.tab[data-tab="login"], .tab[data-tab="register"]').forEach(tab => {
+          tab.classList.add('hidden');
+        });
+        
+        // Load user profile data
+        loadUserProfile();
+      } else {
+        profileTab.classList.add('hidden');
+        document.querySelectorAll('.tab[data-tab="login"], .tab[data-tab="register"]').forEach(tab => {
+          tab.classList.remove('hidden');
+        });
+      }
+    }
+    
+    // Load user profile data
+    async function loadUserProfile() {
+      const token = getAuthToken();
+      if (!token) return;
+      
+      try {
+        const response = await fetch(`${API_URL}/api/user/profile`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Update profile UI
+          document.getElementById('profile-username').textContent = data.user.username;
+          document.getElementById('profile-email').textContent = data.user.email;
+          document.getElementById('profile-role').textContent = data.user.role;
+          document.getElementById('profile-created').textContent = new Date(data.user.created_at).toLocaleDateString();
+          
+          // Update user data in localStorage
+          setUserData(data.user);
+        } else {
+          // Token might be invalid or expired
+          removeAuthToken();
+          updateAuthUI();
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+    
+    // Tab functionality
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs and content
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        // Add active class to clicked tab and corresponding content
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Fetch dashboard stats
+    async function fetchStats() {
+      try {
+        const headers = {};
+        const token = getAuthToken();
+        
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        const response = await fetch(`${API_URL}/api/stats`, { headers });
+        const data = await response.json();
+        
+        document.getElementById('total-scans').textContent = data.total_scans;
+        document.getElementById('total-vulnerabilities').textContent = data.total_vulnerabilities;
+        document.getElementById('high-severity').textContent = data.severity_counts.high;
+        document.getElementById('medium-severity').textContent = data.severity_counts.medium;
+        document.getElementById('low-severity').textContent = data.severity_counts.low;
+        
+        // Populate scans table
+        const tableBody = document.getElementById('scans-table-body');
+        tableBody.innerHTML = '';
+        
+        data.recent_scans.forEach(scan => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${scan.target}</td>
+            <td>${scan.type}</td>
+            <td><span class="status ${scan.status}">${scan.status}</span></td>
+            <td>${new Date(scan.start_time).toLocaleString()}</td>
+            <td>${scan.vulnerabilities_count}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    }
+
+    // Handle login form submission
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const loginButton = document.getElementById('login-button');
+      const loginLoading = document.getElementById('login-loading');
+      const loginError = document.getElementById('login-error');
+      
+      // Show loading indicator
+      loginButton.disabled = true;
+      loginLoading.classList.remove('hidden');
+      loginError.classList.add('hidden');
+      
+      try {
+        const response = await fetch(`${API_URL}/api/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Store token and user data
+          setAuthToken(data.token);
+          setUserData(data.user);
+          
+          // Update UI
+          updateAuthUI();
+          
+          // Switch to dashboard tab
+          document.querySelector('.tab[data-tab="dashboard"]').click();
+        } else {
+          // Failed login
+          loginError.textContent = data.message || 'Invalid credentials';
+          loginError.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        loginError.textContent = 'An error occurred. Please try again.';
+        loginError.classList.remove('hidden');
+      } finally {
+        // Hide loading indicator
+        loginButton.disabled = false;
+        loginLoading.classList.add('hidden');
+      }
+    });
+    
+    // Handle registration form submission
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('reg-username').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+      const confirmPassword = document.getElementById('reg-confirm-password').value;
+      
+      const registerButton = document.getElementById('register-button');
+      const registerLoading = document.getElementById('register-loading');
+      const registerError = document.getElementById('register-error');
+      const registerSuccess = document.getElementById('register-success');
+      
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        registerError.textContent = 'Passwords do not match';
+        registerError.classList.remove('hidden');
+        registerSuccess.classList.add('hidden');
+        return;
+      }
+      
+      // Show loading indicator
+      registerButton.disabled = true;
+      registerLoading.classList.remove('hidden');
+      registerError.classList.add('hidden');
+      registerSuccess.classList.add('hidden');
+      
+      try {
+        const response = await fetch(`${API_URL}/api/auth/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Show success message
+          registerSuccess.textContent = 'Registration successful! You can now log in.';
+          registerSuccess.classList.remove('hidden');
+          
+          // Reset form
+          document.getElementById('register-form').reset();
+          
+          // Redirect to login after 2 seconds
+          setTimeout(() => {
+            document.querySelector('.tab[data-tab="login"]').click();
+          }, 2000);
+        } else {
+          // Failed registration
+          registerError.textContent = data.message || 'Registration failed';
+          registerError.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        registerError.textContent = 'An error occurred. Please try again.';
+        registerError.classList.remove('hidden');
+      } finally {
+        // Hide loading indicator
+        registerButton.disabled = false;
+        registerLoading.classList.add('hidden');
+      }
+    });
+    
+    // Handle logout
+    document.getElementById('logout-button').addEventListener('click', () => {
+      removeAuthToken();
+      updateAuthUI();
+      document.querySelector('.tab[data-tab="home"]').click();
+    });
+
+    // Load dashboard data when tab is clicked
+    document.querySelector('.tab[data-tab="dashboard"]').addEventListener('click', fetchStats);
+
+    // Check if backend is running
+    async function checkBackendStatus() {
+      try {
+        const response = await fetch(`${API_URL}/health`);
+        if (response.ok) {
+          console.log('Backend is running');
+          
+          // Check authentication status and update UI
+          updateAuthUI();
+        }
+      } catch (error) {
+        console.error('Backend connection error:', error);
+      }
+    }
+
+    // Charts
+    function initCharts() {
+      // Vulnerability Trends Chart
+      const trendsCtx = document.getElementById('vulnerabilityTrendsChart');
+      if (trendsCtx) {
+        new Chart(trendsCtx, {
+          type: 'line',
+          data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [
+              {
+                label: 'Critical',
+                data: [12, 15, 18, 14, 11, 8, 10, 9, 6, 5, 8, 12],
+                borderColor: 'rgb(239, 68, 68)',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                tension: 0.4,
+                fill: true
+              },
+              {
+                label: 'High',
+                data: [24, 28, 32, 30, 25, 22, 18, 15, 20, 22, 25, 28],
+                borderColor: 'rgb(245, 158, 11)',
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                tension: 0.4,
+                fill: true
+              },
+              {
+                label: 'Medium',
+                data: [45, 48, 50, 52, 48, 45, 40, 38, 42, 44, 46, 45],
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              tooltip: {
+                mode: 'index',
+                intersect: false,
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: {
+                  drawBorder: false,
+                }
+              },
+              x: {
+                grid: {
+                  display: false,
+                  drawBorder: false
+                }
+              }
+            }
+          }
+        });
+      }
+      
+      // Security Score Chart
+      const scoreCtx = document.getElementById('securityScoreChart');
+      if (scoreCtx) {
+        new Chart(scoreCtx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Secure', 'At Risk'],
+            datasets: [{
+              data: [78, 22],
+              backgroundColor: [
+                'rgb(34, 197, 94)',
+                'rgb(239, 68, 68)'
+              ],
+              borderWidth: 0,
+              cutout: '80%'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                enabled: false
+              }
+            }
+          }
+        });
+      }
+      
+      // Asset Security Chart
+      const assetCtx = document.getElementById('assetSecurityChart');
+      if (assetCtx) {
+        new Chart(assetCtx, {
+          type: 'bar',
+          data: {
+            labels: ['Web Servers', 'Databases', 'Applications', 'Network Devices'],
+            datasets: [
+              {
+                label: 'Secure',
+                data: [8, 5, 10, 4],
+                backgroundColor: 'rgb(34, 197, 94)',
+                barPercentage: 0.6,
+                categoryPercentage: 0.7
+              },
+              {
+                label: 'At Risk',
+                data: [4, 3, 5, 2],
+                backgroundColor: 'rgb(239, 68, 68)',
+                barPercentage: 0.6,
+                categoryPercentage: 0.7
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top'
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false
+                }
+              },
+              y: {
+                beginAtZero: true,
+                grid: {
+                  borderDash: [2, 4]
+                }
+              }
+            }
+          }
+        });
+      }
+    }
+
+    // Table sorting and filtering
+    function sortTable(columnIndex) {
+      const table = document.querySelector('.table-interactive');
+      if (!table) return;
+      
+      const headers = table.querySelectorAll('th');
+      headers.forEach(header => {
+        const icon = header.querySelector('i');
+        if (icon && header !== headers[columnIndex]) {
+          icon.className = 'fas fa-sort';
+        }
+      });
+      
+      const currentIcon = headers[columnIndex].querySelector('i');
+      const isAscending = currentIcon.className === 'fas fa-sort' || 
+                          currentIcon.className === 'fas fa-sort-down';
+      
+      currentIcon.className = isAscending ? 'fas fa-sort-up' : 'fas fa-sort-down';
+      
+      // Sort logic would go here in a real implementation
+      console.log(`Sorting column ${columnIndex} in ${isAscending ? 'ascending' : 'descending'} order`);
+    }
+    
+    function filterScanResults() {
+      const input = document.getElementById('scanResultsSearch');
+      if (!input) return;
+      
+      const filter = input.value.toUpperCase();
+      console.log(`Filtering scan results for: ${filter}`);
+      // Filter logic would go here in a real implementation
+    }
+    
+    function toggleFilterDropdown() {
+      const dropdown = document.getElementById('filterDropdown');
+      if (dropdown) {
+        dropdown.classList.toggle('show');
+      }
+    }
+    
+    function applyFilters() {
+      console.log('Applying filters');
+      // Filter application logic would go here
+      toggleFilterDropdown();
+    }
+    
+    function resetFilters() {
+      console.log('Resetting filters');
+      // Reset filter logic would go here
+      toggleFilterDropdown();
+    }
+    
+    // Close dropdown when clicking outside
+    window.addEventListener('click', function(event) {
+      if (!event.target.matches('.btn-filter') && !event.target.closest('.filter-dropdown')) {
+        const dropdowns = document.getElementsByClassName('filter-dropdown');
+        for (let i = 0; i < dropdowns.length; i++) {
+          if (dropdowns[i].classList.contains('show')) {
+            dropdowns[i].classList.remove('show');
+          }
+        }
+      }
+    });
+    
+    // Initialize
+    checkBackendStatus();
+    initCharts();
+  </script>
+</body>
+</html>

@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoSentinel - Vulnerability Management</title>
+    <link rel="stylesheet" href="css/cyberpunk-unified.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <!-- Unified Navigation -->
+    <nav class="cyber-nav">
+        <a href="index-unified.html" class="nav-brand">
+            <div class="nav-logo">IS</div>
+            <div class="nav-title">InfoSentinel</div>
+        </a>
+        
+        <ul class="nav-links" id="navLinks">
+            <li><a href="index-unified.html" class="nav-link">Dashboard</a></li>
+            <li><a href="pentest-unified.html" class="nav-link">Penetration Testing</a></li>
+            <li><a href="vulnerabilities-unified.html" class="nav-link active">Vulnerabilities</a></li>
+            <li><a href="reports-unified.html" class="nav-link">Reports</a></li>
+            <li><a href="stats-unified.html" class="nav-link">Statistics</a></li>
+            <li><a href="login-unified.html" class="nav-link">Login</a></li>
+        </ul>
+        
+        <button class="nav-toggle" id="navToggle">☰</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="cyber-main">
+        <div class="cyber-container">
+            <!-- Header -->
+            <section class="cyber-section animate-fade-in-up">
+                <div class="text-center mb-4">
+                    <h1 class="cyber-section-title">🛡️ Vulnerability Management</h1>
+                    <p class="cyber-section-subtitle">Comprehensive vulnerability tracking, analysis, and remediation</p>
+                </div>
+            </section>
+
+            <!-- Vulnerability Overview -->
+            <section class="cyber-section">
+                <div class="cyber-grid cyber-grid-4">
+                    <div class="cyber-stat-card animate-slide-in-left" style="animation-delay: 0.1s">
+                        <div class="cyber-stat-value" id="totalVulns">0</div>
+                        <div class="cyber-stat-label">Total Vulnerabilities</div>
+                        <div class="mt-2">
+                            <div class="cyber-progress">
+                                <div class="cyber-progress-bar" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cyber-stat-card animate-slide-in-left" style="animation-delay: 0.2s">
+                        <div class="cyber-stat-value" id="criticalVulns">0</div>
+                        <div class="cyber-stat-label">Critical Vulnerabilities</div>
+                        <div class="mt-2">
+                            <div class="cyber-progress">
+                                <div class="cyber-progress-bar" style="width: 25%; background: linear-gradient(90deg, #ef4444, #dc2626);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cyber-stat-card animate-slide-in-left" style="animation-delay: 0.3s">
+                        <div class="cyber-stat-value" id="remediatedVulns">0</div>
+                        <div class="cyber-stat-label">Remediated</div>
+                        <div class="mt-2">
+                            <div class="cyber-progress">
+                                <div class="cyber-progress-bar" style="width: 60%; background: linear-gradient(90deg, #22c55e, #16a34a);"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cyber-stat-card animate-slide-in-left" style="animation-delay: 0.4s">
+                        <div class="cyber-stat-value" id="avgCvss">0.0</div>
+                        <div class="cyber-stat-label">Average CVSS Score</div>
+                        <div class="mt-2">
+                            <div class="cyber-progress">
+                                <div class="cyber-progress-bar" style="width: 45%; background: linear-gradient(90deg, #f59e0b, #d97706);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filters and Search -->
+            <section class="cyber-section">
+                <div class="cyber-card">
+                    <div class="cyber-card-header">
+                        <h3 class="cyber-card-title">🔍 Filter & Search</h3>
+                        <p class="cyber-card-subtitle">Find and filter vulnerabilities by various criteria</p>
+                    </div>
+                    
+                    <div class="cyber-grid cyber-grid-4">
+                        <div>
+                            <label class="block text-primary mb-2">Search</label>
+                            <input type="text" class="cyber-input" id="searchInput" 
+                                   placeholder="Search vulnerabilities..." onkeyup="filterVulnerabilities()">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-primary mb-2">Severity</label>
+                            <select class="cyber-select" id="severityFilter" onchange="filterVulnerabilities()">
+                                <option value="">All Severities</option>
+                                <option value="Critical">Critical</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-primary mb-2">Status</label>
+                            <select class="cyber-select" id="statusFilter" onchange="filterVulnerabilities()">
+                                <option value="">All Statuses</option>
+                                <option value="Open">Open</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Remediated">Remediated</option>
+                                <option value="False Positive">False Positive</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-primary mb-2">Host</label>
+                            <select class="cyber-select" id="hostFilter" onchange="filterVulnerabilities()">
+                                <option value="">All Hosts</option>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-2 mt-3">
+                        <button class="cyber-btn cyber-btn-primary" onclick="exportVulnerabilities()">
+                            📤 Export CSV
+                        </button>
+                        <button class="cyber-btn cyber-btn-secondary" onclick="generateVulnReport()">
+                            📊 Generate Report
+                        </button>
+                        <button class="cyber-btn cyber-btn-secondary" onclick="bulkActions()">
+                            ⚡ Bulk Actions
+                        </button>
+                        <button class="cyber-btn cyber-btn-secondary" onclick="refreshVulnerabilities()">
+                            🔄 Refresh
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Vulnerability List -->
+            <section class="cyber-section">
+                <div class="cyber-card">
+                    <div class="cyber-card-header">
+                        <h3 class="cyber-card-title">📋 Vulnerability Database</h3>
+                        <p class="cyber-card-subtitle">Comprehensive list of identified security vulnerabilities</p>
+                    </div>
+                    
+                    <div class="vulnerability-list">
+                        <div class="cyber-table-container">
+                            <table class="cyber-table">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                                        <th onclick="sortTable('id')">ID ↕️</th>
+                                        <th onclick="sortTable('name')">Vulnerability ↕️</th>
+                                        <th onclick="sortTable('host')">Host ↕️</th>
+                                        <th onclick="sortTable('severity')">Severity ↕️</th>
+                                        <th onclick="sortTable('cvss')">CVSS ↕️</th>
+                                        <th onclick="sortTable('status')">Status ↕️</th>
+                                        <th onclick="sortTable('discovered')">Discovered ↕️</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vulnerabilityTableBody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="pagination mt-3 flex justify-between items-center">
+                            <div class="text-secondary">
+                                Showing <span id="showingStart">1</span>-<span id="showingEnd">10</span> of <span id="totalCount">0</span> vulnerabilities
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="cyber-btn cyber-btn-secondary" onclick="previousPage()" id="prevBtn">← Previous</button>
+                                <span class="text-primary px-3 py-2">Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
+                                <button class="cyber-btn cyber-btn-secondary" onclick="nextPage()" id="nextBtn">Next →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Vulnerability Details Modal -->
+            <div id="vulnModal" class="modal hidden">
+                <div class="modal-content cyber-card" style="max-width: 800px; margin: 2rem auto;">
+                    <div class="cyber-card-header">
+                        <h3 class="cyber-card-title" id="modalTitle">Vulnerability Details</h3>
+                        <button class="cyber-btn cyber-btn-secondary" onclick="closeModal()" style="position: absolute; top: 1rem; right: 1rem;">✕</button>
+                    </div>
+                    
+                    <div id="modalContent">
+                        <!-- Dynamic content -->
+                    </div>
+                    
+                    <div class="flex gap-2 mt-3">
+                        <button class="cyber-btn cyber-btn-primary" onclick="markAsRemediated()">
+                            ✅ Mark as Remediated
+                        </button>
+                        <button class="cyber-btn cyber-btn-secondary" onclick="markAsProgress()">
+                            🔄 Mark In Progress
+                        </button>
+                        <button class="cyber-btn cyber-btn-secondary" onclick="markAsFalsePositive()">
+                            ❌ False Positive
+                        </button>
+                        <button class="cyber-btn cyber-btn-secondary" onclick="generateVulnPatch()">
+                            🔧 Generate Patch
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vulnerability Analytics -->
+            <section class="cyber-section">
+                <div class="cyber-grid cyber-grid-2">
+                    <!-- Severity Distribution Chart -->
+                    <div class="cyber-card">
+                        <div class="cyber-card-header">
+                            <h3 class="cyber-card-title">📊 Severity Distribution</h3>
+                            <p class="cyber-card-subtitle">Breakdown of vulnerabilities by severity level</p>
+                        </div>
+                        
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="severityChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Trend Analysis -->
+                    <div class="cyber-card">
+                        <div class="cyber-card-header">
+                            <h3 class="cyber-card-title">📈 Vulnerability Trends</h3>
+                            <p class="cyber-card-subtitle">Discovery and remediation trends over time</p>
+                        </div>
+                        
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Top Vulnerabilities -->
+            <section class="cyber-section">
+                <div class="cyber-card">
+                    <div class="cyber-card-header">
+                        <h3 class="cyber-card-title">🚨 Top Priority Vulnerabilities</h3>
+                        <p class="cyber-card-subtitle">Most critical vulnerabilities requiring immediate attention</p>
+                    </div>
+                    
+                    <div id="topVulnerabilities">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal Styles -->
+    <style>
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .modal.hidden {
+            display: none;
+        }
+        
+        .modal-content {
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .vulnerability-item {
+            background: var(--bg-glass-light);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--accent-cyan);
+        }
+        
+        .vulnerability-item.critical {
+            border-left-color: #ef4444;
+        }
+        
+        .vulnerability-item.high {
+            border-left-color: #f59e0b;
+        }
+        
+        .vulnerability-item.medium {
+            border-left-color: #00ffcc;
+        }
+        
+        .vulnerability-item.low {
+            border-left-color: #22c55e;
+        }
+        
+        .cyber-table th {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .cyber-table th:hover {
+            background: var(--bg-tertiary);
+        }
+    </style>
+
+    <!-- JavaScript -->
+    <script>
+        // Navigation Toggle
+        document.getElementById('navToggle').addEventListener('click', function() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        });
+
+        // Vulnerability data
+        let vulnerabilities = [];
+        let filteredVulnerabilities = [];
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let sortColumn = 'id';
+        let sortDirection = 'asc';
+        let selectedVulnerability = null;
+
+        // Sample vulnerability data
+        function generateVulnerabilityData() {
+            const vulnTypes = [
+                'SQL Injection', 'Cross-Site Scripting (XSS)', 'Remote Code Execution',
+                'Buffer Overflow', 'Authentication Bypass', 'Directory Traversal',
+                'Weak Encryption', 'Default Credentials', 'Information Disclosure',
+                'Privilege Escalation', 'Denial of Service', 'CSRF', 'XXE Injection',
+                'Insecure Deserialization', 'Security Misconfiguration'
+            ];
+            
+            const hosts = [
+                '192.168.1.10', '192.168.1.20', '192.168.1.30', '192.168.1.40',
+                '192.168.1.50', '10.0.0.5', '10.0.0.10', '172.16.1.100'
+            ];
+            
+            const severities = ['Critical', 'High', 'Medium', 'Low'];
+            const statuses = ['Open', 'In Progress', 'Remediated', 'False Positive'];
+            
+            vulnerabilities = [];
+            
+            for (let i = 1; i <= 50; i++) {
+                const severity = severities[Math.floor(Math.random() * severities.length)];
+                const cvssBase = {
+                    'Critical': 9.0 + Math.random(),
+                    'High': 7.0 + Math.random() * 2,
+                    'Medium': 4.0 + Math.random() * 3,
+                    'Low': 0.1 + Math.random() * 3.9
+                };
+                
+                vulnerabilities.push({
+                    id: `VULN-${i.toString().padStart(4, '0')}`,
+                    name: vulnTypes[Math.floor(Math.random() * vulnTypes.length)],
+                    host: hosts[Math.floor(Math.random() * hosts.length)],
+                    severity: severity,
+                    cvss: cvssBase[severity].toFixed(1),
+                    status: statuses[Math.floor(Math.random() * statuses.length)],
+                    discovered: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    description: `${vulnTypes[Math.floor(Math.random() * vulnTypes.length)]} vulnerability found in the target system.`,
+                    port: Math.floor(Math.random() * 65535),
+                    service: ['HTTP', 'HTTPS', 'SSH', 'FTP', 'MySQL', 'PostgreSQL'][Math.floor(Math.random() * 6)],
+                    cve: Math.random() > 0.5 ? `CVE-2023-${Math.floor(Math.random() * 9999).toString().padStart(4, '0')}` : 'N/A'
+                });
+            }
+            
+            filteredVulnerabilities = [...vulnerabilities];
+            updateStatistics();
+            populateHostFilter();
+            renderVulnerabilities();
+            renderCharts();
+            renderTopVulnerabilities();
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const total = vulnerabilities.length;
+            const critical = vulnerabilities.filter(v => v.severity === 'Critical').length;
+            const remediated = vulnerabilities.filter(v => v.status === 'Remediated').length;
+            const avgCvss = vulnerabilities.reduce((sum, v) => sum + parseFloat(v.cvss), 0) / total;
+            
+            animateCounter('totalVulns', total);
+            animateCounter('criticalVulns', critical);
+            animateCounter('remediatedVulns', remediated);
+            document.getElementById('avgCvss').textContent = avgCvss.toFixed(1);
+        }
+
+        // Animate counter
+        function animateCounter(elementId, targetValue, duration = 1000) {
+            const element = document.getElementById(elementId);
+            const startValue = parseInt(element.textContent) || 0;
+            const increment = (targetValue - startValue) / (duration / 16);
+            let currentValue = startValue;
+
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if ((increment > 0 && currentValue >= targetValue) || 
+                    (increment < 0 && currentValue <= targetValue)) {
+                    currentValue = targetValue;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(currentValue);
+            }, 16);
+        }
+
+        // Populate host filter
+        function populateHostFilter() {
+            const hostFilter = document.getElementById('hostFilter');
+            const hosts = [...new Set(vulnerabilities.map(v => v.host))].sort();
+            
+            hostFilter.innerHTML = '<option value="">All Hosts</option>';
+            hosts.forEach(host => {
+                const option = document.createElement('option');
+                option.value = host;
+                option.textContent = host;
+                hostFilter.appendChild(option);
+            });
+        }
+
+        // Filter vulnerabilities
+        function filterVulnerabilities() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const severity = document.getElementById('severityFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const host = document.getElementById('hostFilter').value;
+            
+            filteredVulnerabilities = vulnerabilities.filter(vuln => {
+                const matchesSearch = vuln.name.toLowerCase().includes(search) || 
+                                    vuln.id.toLowerCase().includes(search) ||
+                                    vuln.host.toLowerCase().includes(search);
+                const matchesSeverity = !severity || vuln.severity === severity;
+                const matchesStatus = !status || vuln.status === status;
+                const matchesHost = !host || vuln.host === host;
+                
+                return matchesSearch && matchesSeverity && matchesStatus && matchesHost;
+            });
+            
+            currentPage = 1;
+            renderVulnerabilities();
+        }
+
+        // Sort table
+        function sortTable(column) {
+            if (sortColumn === column) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = column;
+                sortDirection = 'asc';
+            }
+            
+            filteredVulnerabilities.sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+                
+                if (column === 'cvss') {
+                    aVal = parseFloat(aVal);
+                    bVal = parseFloat(bVal);
+                }
+                
+                if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+                if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            renderVulnerabilities();
+        }
+
+        // Render vulnerabilities table
+        function renderVulnerabilities() {
+            const tbody = document.getElementById('vulnerabilityTableBody');
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageData = filteredVulnerabilities.slice(start, end);
+            
+            tbody.innerHTML = '';
+            
+            pageData.forEach(vuln => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><input type="checkbox" class="vuln-checkbox" value="${vuln.id}"></td>
+                    <td>${vuln.id}</td>
+                    <td><a href="#" onclick="showVulnerabilityDetails('${vuln.id}')" class="text-accent">${vuln.name}</a></td>
+                    <td>${vuln.host}</td>
+                    <td><span class="cyber-badge cyber-badge-${vuln.severity.toLowerCase()}">${vuln.severity}</span></td>
+                    <td>${vuln.cvss}</td>
+                    <td><span class="cyber-badge cyber-badge-${getStatusClass(vuln.status)}">${vuln.status}</span></td>
+                    <td>${vuln.discovered}</td>
+                    <td>
+                        <button class="cyber-btn cyber-btn-secondary" onclick="showVulnerabilityDetails('${vuln.id}')" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">
+                            👁️ View
+                        </button>
+                    </td>
+                `;
+            });
+            
+            updatePagination();
+        }
+
+        // Update pagination
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredVulnerabilities.length / itemsPerPage);
+            const start = (currentPage - 1) * itemsPerPage + 1;
+            const end = Math.min(currentPage * itemsPerPage, filteredVulnerabilities.length);
+            
+            document.getElementById('showingStart').textContent = start;
+            document.getElementById('showingEnd').textContent = end;
+            document.getElementById('totalCount').textContent = filteredVulnerabilities.length;
+            document.getElementById('currentPage').textContent = currentPage;
+            document.getElementById('totalPages').textContent = totalPages;
+            
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+        }
+
+        // Pagination functions
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderVulnerabilities();
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredVulnerabilities.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderVulnerabilities();
+            }
+        }
+
+        // Show vulnerability details
+        function showVulnerabilityDetails(vulnId) {
+            selectedVulnerability = vulnerabilities.find(v => v.id === vulnId);
+            if (!selectedVulnerability) return;
+            
+            document.getElementById('modalTitle').textContent = `${selectedVulnerability.id} - ${selectedVulnerability.name}`;
+            
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="vulnerability-details">
+                    <div class="cyber-grid cyber-grid-2 mb-3">
+                        <div>
+                            <strong>Host:</strong> ${selectedVulnerability.host}<br>
+                            <strong>Port:</strong> ${selectedVulnerability.port}<br>
+                            <strong>Service:</strong> ${selectedVulnerability.service}<br>
+                            <strong>CVE:</strong> ${selectedVulnerability.cve}
+                        </div>
+                        <div>
+                            <strong>Severity:</strong> <span class="cyber-badge cyber-badge-${selectedVulnerability.severity.toLowerCase()}">${selectedVulnerability.severity}</span><br>
+                            <strong>CVSS Score:</strong> ${selectedVulnerability.cvss}<br>
+                            <strong>Status:</strong> <span class="cyber-badge cyber-badge-${getStatusClass(selectedVulnerability.status)}">${selectedVulnerability.status}</span><br>
+                            <strong>Discovered:</strong> ${selectedVulnerability.discovered}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Description:</strong><br>
+                        <p class="text-secondary mt-2">${selectedVulnerability.description}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong>Remediation Recommendations:</strong><br>
+                        <ul class="text-secondary mt-2">
+                            <li>Apply security patches and updates</li>
+                            <li>Implement input validation and sanitization</li>
+                            <li>Configure proper access controls</li>
+                            <li>Monitor for suspicious activities</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('vulnModal').classList.remove('hidden');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('vulnModal').classList.add('hidden');
+            selectedVulnerability = null;
+        }
+
+        // Utility functions
+        function getStatusClass(status) {
+            const classes = {
+                'Open': 'danger',
+                'In Progress': 'warning',
+                'Remediated': 'success',
+                'False Positive': 'info'
+            };
+            return classes[status] || 'info';
+        }
+
+        // Action functions
+        function markAsRemediated() {
+            if (selectedVulnerability) {
+                selectedVulnerability.status = 'Remediated';
+                closeModal();
+                renderVulnerabilities();
+                updateStatistics();
+            }
+        }
+
+        function markAsProgress() {
+            if (selectedVulnerability) {
+                selectedVulnerability.status = 'In Progress';
+                closeModal();
+                renderVulnerabilities();
+            }
+        }
+
+        function markAsFalsePositive() {
+            if (selectedVulnerability) {
+                selectedVulnerability.status = 'False Positive';
+                closeModal();
+                renderVulnerabilities();
+                updateStatistics();
+            }
+        }
+
+        function generateVulnPatch() {
+            alert('Generating automated patch for vulnerability...');
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.vuln-checkbox');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        }
+
+        function exportVulnerabilities() {
+            const csv = convertToCSV(filteredVulnerabilities);
+            downloadCSV(csv, 'vulnerabilities.csv');
+        }
+
+        function convertToCSV(data) {
+            const headers = ['ID', 'Name', 'Host', 'Severity', 'CVSS', 'Status', 'Discovered', 'CVE'];
+            const csvContent = [headers.join(',')];
+            
+            data.forEach(vuln => {
+                const row = [
+                    vuln.id,
+                    `"${vuln.name}"`,
+                    vuln.host,
+                    vuln.severity,
+                    vuln.cvss,
+                    vuln.status,
+                    vuln.discovered,
+                    vuln.cve
+                ];
+                csvContent.push(row.join(','));
+            });
+            
+            return csvContent.join('\n');
+        }
+
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function generateVulnReport() {
+            window.location.href = 'reports-unified.html';
+        }
+
+        function bulkActions() {
+            const selected = document.querySelectorAll('.vuln-checkbox:checked');
+            if (selected.length === 0) {
+                alert('Please select vulnerabilities to perform bulk actions.');
+                return;
+            }
+            alert(`Bulk actions for ${selected.length} selected vulnerabilities`);
+        }
+
+        function refreshVulnerabilities() {
+            generateVulnerabilityData();
+        }
+
+        // Render charts
+        function renderCharts() {
+            renderSeverityChart();
+            renderTrendChart();
+        }
+
+        function renderSeverityChart() {
+            const ctx = document.getElementById('severityChart').getContext('2d');
+            const severityCounts = {
+                'Critical': vulnerabilities.filter(v => v.severity === 'Critical').length,
+                'High': vulnerabilities.filter(v => v.severity === 'High').length,
+                'Medium': vulnerabilities.filter(v => v.severity === 'Medium').length,
+                'Low': vulnerabilities.filter(v => v.severity === 'Low').length
+            };
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(severityCounts),
+                    datasets: [{
+                        data: Object.values(severityCounts),
+                        backgroundColor: ['#ef4444', '#f59e0b', '#00ffcc', '#22c55e'],
+                        borderColor: '#1e1e28',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTrendChart() {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            
+            // Generate trend data for the last 30 days
+            const dates = [];
+            const discovered = [];
+            const remediated = [];
+            
+            for (let i = 29; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                dates.push(date.toISOString().split('T')[0]);
+                discovered.push(Math.floor(Math.random() * 10) + 1);
+                remediated.push(Math.floor(Math.random() * 8));
+            }
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Discovered',
+                        data: discovered,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Remediated',
+                        data: remediated,
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            ticks: {
+                                color: '#ffffff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#ffffff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Render top vulnerabilities
+        function renderTopVulnerabilities() {
+            const topVulns = vulnerabilities
+                .filter(v => v.severity === 'Critical' || v.severity === 'High')
+                .sort((a, b) => parseFloat(b.cvss) - parseFloat(a.cvss))
+                .slice(0, 5);
+            
+            const container = document.getElementById('topVulnerabilities');
+            container.innerHTML = '';
+            
+            topVulns.forEach(vuln => {
+                const vulnElement = document.createElement('div');
+                vulnElement.className = `vulnerability-item ${vuln.severity.toLowerCase()}`;
+                vulnElement.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="text-primary font-medium mb-1">${vuln.name}</h4>
+                            <p class="text-secondary text-sm mb-2">${vuln.host} - ${vuln.service}</p>
+                            <div class="flex gap-2">
+                                <span class="cyber-badge cyber-badge-${vuln.severity.toLowerCase()}">${vuln.severity}</span>
+                                <span class="cyber-badge cyber-badge-info">CVSS: ${vuln.cvss}</span>
+                                <span class="cyber-badge cyber-badge-${getStatusClass(vuln.status)}">${vuln.status}</span>
+                            </div>
+                        </div>
+                        <button class="cyber-btn cyber-btn-primary" onclick="showVulnerabilityDetails('${vuln.id}')" style="padding: 0.5rem;">
+                            👁️ View
+                        </button>
+                    </div>
+                `;
+                container.appendChild(vulnElement);
+            });
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            generateVulnerabilityData();
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('vulnModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

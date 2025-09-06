@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoSentinel - Cybersecurity Command Center</title>
+    <link rel="stylesheet" href="css/cyberpunk-unified.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <!-- Unified Navigation -->
+    <nav class="cyber-nav">
+        <a href="index-unified.html" class="nav-brand">
+            <div class="nav-logo">IS</div>
+            <div class="nav-title">InfoSentinel</div>
+        </a>
+        
+        <ul class="nav-links" id="navLinks">
+            <li><a href="index-unified.html" class="nav-link active">Dashboard</a></li>
+            <li><a href="pentest-unified.html" class="nav-link">Penetration Testing</a></li>
+            <li><a href="vulnerabilities-unified.html" class="nav-link">Vulnerabilities</a></li>
+            <li><a href="reports-unified.html" class="nav-link">Reports</a></li>
+            <li><a href="stats-unified.html" class="nav-link">Statistics</a></li>
+            <li><a href="login-unified.html" class="nav-link">Login</a></li>
+        </ul>
+        
+        <button class="nav-toggle" id="navToggle">☰</button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="cyber-main">
+        <div class="cyber-container">
+            <!-- Hero Section -->
+            <section class="cyber-section animate-fade-in-up">
+                <div class="text-center mb-4">
+                    <h1 class="cyber-section-title">Security Command Center</h1>
+                    <p class="cyber-section-subtitle">Real-time cybersecurity monitoring and threat intelligence</p>
+                </div>
+                
+                <!-- Real-time Status -->
+                <div class="cyber-card mb-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="cyber-badge cyber-badge-success">
+                                <span class="status-indicator animate-glow">●</span>
+                                System Operational
+                            </div>
+                            <div class="cyber-badge cyber-badge-info">
+                                Last Scan: <span id="lastScanTime">2 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="cyber-btn cyber-btn-primary" onclick="startQuickScan()">
+                                🔍 Quick Scan
+                            </button>
+                            <button class="cyber-btn cyber-btn-secondary" onclick="refreshDashboard()">
+                                🔄 Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Metrics Grid -->
+            <section class="cyber-section">
+                <div class="cyber-grid cyber-grid-4">
+                    <div class="cyber-stat-card animate-slide-in-left" style="animation-delay: 0.1s">
+                        <div class="cyber-stat-value" id="threatCount">0</div>
+                        <div class="cyber-stat-label">Active Threats</div>
+                        <div class="mt-2">
+                            <div class="cyber-progress">
+                                <div class="cyber-progress-bar" style="width: 15%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cyber-stat-card animate-slide-in-left" style="animation-delay: 0.2s">
+                        <div class="cyber-stat-value" id="vulnerabilityCount">0</div>
+                        <div class="cyber-stat-label">Vulnerabilities</div>
+                        <div class="mt-2">
+                            <div class="cyber-progress">
+                                <div class="cyber-progress-bar" style="width: 65%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cyber-stat-card animate-slide-in-left" style="animation-delay: 0.3s">
+                        <div class="cyber-stat-value" id="assetCount">0</div>
+                        <div class="cyber-stat-label">Protected Assets</div>
+                        <div class="mt-2">
+                            <div class="cyber-progress">
+                                <div class="cyber-progress-bar" style="width: 90%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="cyber-stat-card animate-slide-in-left" style="animation-delay: 0.4s">
+                        <div class="cyber-stat-value" id="riskScore">0</div>
+                        <div class="cyber-stat-label">Risk Score</div>
+                        <div class="mt-2">
+                            <div class="cyber-progress">
+                                <div class="cyber-progress-bar" style="width: 35%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Dashboard Grid -->
+            <section class="cyber-section">
+                <div class="cyber-grid cyber-grid-2">
+                    <!-- Threat Intelligence Feed -->
+                    <div class="cyber-card">
+                        <div class="cyber-card-header">
+                            <h3 class="cyber-card-title">🛡️ Threat Intelligence Feed</h3>
+                            <p class="cyber-card-subtitle">Real-time security alerts and threat indicators</p>
+                        </div>
+                        
+                        <div class="threat-feed" id="threatFeed">
+                            <!-- Threats will be populated by JavaScript -->
+                        </div>
+                        
+                        <div class="mt-3">
+                            <button class="cyber-btn cyber-btn-secondary w-full" onclick="loadMoreThreats()">
+                                Load More Threats
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Network Status -->
+                    <div class="cyber-card">
+                        <div class="cyber-card-header">
+                            <h3 class="cyber-card-title">🌐 Network Status</h3>
+                            <p class="cyber-card-subtitle">Real-time network monitoring and topology</p>
+                        </div>
+                        
+                        <div id="networkVisualization" style="height: 300px; position: relative;">
+                            <!-- D3.js network visualization will be rendered here -->
+                        </div>
+                        
+                        <div class="mt-3 flex gap-2">
+                            <button class="cyber-btn cyber-btn-primary" onclick="refreshNetwork()">
+                                🔄 Refresh
+                            </button>
+                            <button class="cyber-btn cyber-btn-secondary" onclick="expandNetwork()">
+                                🔍 Expand View
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security Events & Vulnerability Summary -->
+            <section class="cyber-section">
+                <div class="cyber-grid cyber-grid-2">
+                    <!-- Recent Security Events -->
+                    <div class="cyber-card">
+                        <div class="cyber-card-header">
+                            <h3 class="cyber-card-title">⚡ Recent Security Events</h3>
+                            <p class="cyber-card-subtitle">Latest security incidents and alerts</p>
+                        </div>
+                        
+                        <div class="security-events" id="securityEvents">
+                            <!-- Events will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Vulnerability Summary -->
+                    <div class="cyber-card">
+                        <div class="cyber-card-header">
+                            <h3 class="cyber-card-title">🔍 Vulnerability Summary</h3>
+                            <p class="cyber-card-subtitle">Critical vulnerabilities requiring attention</p>
+                        </div>
+                        
+                        <div class="vulnerability-summary">
+                            <div class="vuln-category mb-3">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-primary">Critical</span>
+                                    <span class="cyber-badge cyber-badge-danger" id="criticalCount">0</span>
+                                </div>
+                                <div class="cyber-progress">
+                                    <div class="cyber-progress-bar" style="width: 25%; background: linear-gradient(90deg, #ef4444, #dc2626);"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="vuln-category mb-3">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-primary">High</span>
+                                    <span class="cyber-badge cyber-badge-warning" id="highCount">0</span>
+                                </div>
+                                <div class="cyber-progress">
+                                    <div class="cyber-progress-bar" style="width: 45%; background: linear-gradient(90deg, #f59e0b, #d97706);"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="vuln-category mb-3">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-primary">Medium</span>
+                                    <span class="cyber-badge cyber-badge-info" id="mediumCount">0</span>
+                                </div>
+                                <div class="cyber-progress">
+                                    <div class="cyber-progress-bar" style="width: 70%;"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="vuln-category">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-primary">Low</span>
+                                    <span class="cyber-badge cyber-badge-success" id="lowCount">0</span>
+                                </div>
+                                <div class="cyber-progress">
+                                    <div class="cyber-progress-bar" style="width: 90%; background: linear-gradient(90deg, #22c55e, #16a34a);"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <a href="vulnerabilities-unified.html" class="cyber-btn cyber-btn-primary w-full">
+                                View All Vulnerabilities
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="cyber-section">
+                <div class="cyber-card">
+                    <div class="cyber-card-header">
+                        <h3 class="cyber-card-title">🚀 Quick Actions</h3>
+                        <p class="cyber-card-subtitle">Frequently used security operations</p>
+                    </div>
+                    
+                    <div class="cyber-grid cyber-grid-4">
+                        <button class="cyber-btn cyber-btn-primary" onclick="startFullScan()">
+                            🔍 Full Security Scan
+                        </button>
+                        <button class="cyber-btn cyber-btn-secondary" onclick="generateReport()">
+                            📊 Generate Report
+                        </button>
+                        <button class="cyber-btn cyber-btn-secondary" onclick="updateSignatures()">
+                            🔄 Update Signatures
+                        </button>
+                        <button class="cyber-btn cyber-btn-secondary" onclick="exportData()">
+                            💾 Export Data
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        // Navigation Toggle
+        document.getElementById('navToggle').addEventListener('click', function() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        });
+
+        // Real-time Data Simulation
+        let threatCount = 0;
+        let vulnerabilityCount = 0;
+        let assetCount = 0;
+        let riskScore = 0;
+
+        // Animate counters
+        function animateCounter(elementId, targetValue, duration = 2000) {
+            const element = document.getElementById(elementId);
+            const startValue = parseInt(element.textContent) || 0;
+            const increment = (targetValue - startValue) / (duration / 16);
+            let currentValue = startValue;
+
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if ((increment > 0 && currentValue >= targetValue) || 
+                    (increment < 0 && currentValue <= targetValue)) {
+                    currentValue = targetValue;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(currentValue);
+            }, 16);
+        }
+
+        // Initialize dashboard data
+        function initializeDashboard() {
+            // Simulate real-time data
+            threatCount = Math.floor(Math.random() * 15) + 5;
+            vulnerabilityCount = Math.floor(Math.random() * 50) + 25;
+            assetCount = Math.floor(Math.random() * 100) + 150;
+            riskScore = Math.floor(Math.random() * 40) + 30;
+
+            // Animate counters
+            animateCounter('threatCount', threatCount);
+            animateCounter('vulnerabilityCount', vulnerabilityCount);
+            animateCounter('assetCount', assetCount);
+            animateCounter('riskScore', riskScore);
+
+            // Update vulnerability breakdown
+            const critical = Math.floor(vulnerabilityCount * 0.15);
+            const high = Math.floor(vulnerabilityCount * 0.25);
+            const medium = Math.floor(vulnerabilityCount * 0.35);
+            const low = vulnerabilityCount - critical - high - medium;
+
+            animateCounter('criticalCount', critical);
+            animateCounter('highCount', high);
+            animateCounter('mediumCount', medium);
+            animateCounter('lowCount', low);
+
+            // Load threat feed
+            loadThreatFeed();
+            loadSecurityEvents();
+            initializeNetworkVisualization();
+        }
+
+        // Threat Feed
+        function loadThreatFeed() {
+            const threats = [
+                { type: 'Malware', severity: 'high', source: 'External IP', time: '2 min ago' },
+                { type: 'Phishing', severity: 'medium', source: 'Email Gateway', time: '5 min ago' },
+                { type: 'Brute Force', severity: 'critical', source: '192.168.1.100', time: '8 min ago' },
+                { type: 'SQL Injection', severity: 'high', source: 'Web Server', time: '12 min ago' },
+                { type: 'Port Scan', severity: 'low', source: 'External', time: '15 min ago' }
+            ];
+
+            const feedContainer = document.getElementById('threatFeed');
+            feedContainer.innerHTML = '';
+
+            threats.forEach((threat, index) => {
+                const threatElement = document.createElement('div');
+                threatElement.className = 'threat-item mb-2 p-2';
+                threatElement.style.cssText = `
+                    background: var(--bg-glass-light);
+                    border-radius: var(--radius-sm);
+                    border-left: 3px solid ${getSeverityColor(threat.severity)};
+                    animation: fadeInUp 0.5s ease-out ${index * 0.1}s both;
+                `;
+                
+                threatElement.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="text-primary font-medium">${threat.type}</div>
+                            <div class="text-secondary text-sm">${threat.source}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="cyber-badge cyber-badge-${threat.severity}">${threat.severity}</div>
+                            <div class="text-muted text-sm">${threat.time}</div>
+                        </div>
+                    </div>
+                `;
+                
+                feedContainer.appendChild(threatElement);
+            });
+        }
+
+        // Security Events
+        function loadSecurityEvents() {
+            const events = [
+                { event: 'Firewall Rule Updated', status: 'success', time: '1 min ago' },
+                { event: 'Vulnerability Scan Completed', status: 'info', time: '3 min ago' },
+                { event: 'Failed Login Attempt Detected', status: 'warning', time: '7 min ago' },
+                { event: 'Malware Signature Updated', status: 'success', time: '10 min ago' },
+                { event: 'Network Anomaly Detected', status: 'danger', time: '14 min ago' }
+            ];
+
+            const eventsContainer = document.getElementById('securityEvents');
+            eventsContainer.innerHTML = '';
+
+            events.forEach((event, index) => {
+                const eventElement = document.createElement('div');
+                eventElement.className = 'event-item mb-2 p-2';
+                eventElement.style.cssText = `
+                    background: var(--bg-glass-light);
+                    border-radius: var(--radius-sm);
+                    border-left: 3px solid ${getStatusColor(event.status)};
+                    animation: slideInLeft 0.5s ease-out ${index * 0.1}s both;
+                `;
+                
+                eventElement.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div class="text-primary">${event.event}</div>
+                        <div class="text-right">
+                            <div class="cyber-badge cyber-badge-${event.status}">${event.status}</div>
+                            <div class="text-muted text-sm">${event.time}</div>
+                        </div>
+                    </div>
+                `;
+                
+                eventsContainer.appendChild(eventElement);
+            });
+        }
+
+        // Network Visualization with D3.js
+        function initializeNetworkVisualization() {
+            const container = document.getElementById('networkVisualization');
+            const width = container.offsetWidth;
+            const height = 300;
+
+            // Clear previous visualization
+            d3.select(container).selectAll('*').remove();
+
+            const svg = d3.select(container)
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            // Sample network data
+            const nodes = [
+                { id: 'firewall', type: 'security', x: width * 0.2, y: height * 0.5 },
+                { id: 'server1', type: 'server', x: width * 0.5, y: height * 0.3 },
+                { id: 'server2', type: 'server', x: width * 0.5, y: height * 0.7 },
+                { id: 'database', type: 'database', x: width * 0.8, y: height * 0.5 },
+                { id: 'workstation', type: 'client', x: width * 0.1, y: height * 0.2 }
+            ];
+
+            const links = [
+                { source: 'firewall', target: 'server1' },
+                { source: 'firewall', target: 'server2' },
+                { source: 'server1', target: 'database' },
+                { source: 'server2', target: 'database' },
+                { source: 'workstation', target: 'firewall' }
+            ];
+
+            // Draw links
+            svg.selectAll('.link')
+                .data(links)
+                .enter()
+                .append('line')
+                .attr('class', 'link')
+                .attr('x1', d => nodes.find(n => n.id === d.source).x)
+                .attr('y1', d => nodes.find(n => n.id === d.source).y)
+                .attr('x2', d => nodes.find(n => n.id === d.target).x)
+                .attr('y2', d => nodes.find(n => n.id === d.target).y)
+                .attr('stroke', '#00ffcc')
+                .attr('stroke-width', 2)
+                .attr('opacity', 0.6);
+
+            // Draw nodes
+            svg.selectAll('.node')
+                .data(nodes)
+                .enter()
+                .append('circle')
+                .attr('class', 'node')
+                .attr('cx', d => d.x)
+                .attr('cy', d => d.y)
+                .attr('r', 15)
+                .attr('fill', d => getNodeColor(d.type))
+                .attr('stroke', '#00ffcc')
+                .attr('stroke-width', 2)
+                .style('cursor', 'pointer')
+                .on('mouseover', function(event, d) {
+                    d3.select(this).attr('r', 20);
+                })
+                .on('mouseout', function(event, d) {
+                    d3.select(this).attr('r', 15);
+                });
+
+            // Add labels
+            svg.selectAll('.label')
+                .data(nodes)
+                .enter()
+                .append('text')
+                .attr('class', 'label')
+                .attr('x', d => d.x)
+                .attr('y', d => d.y + 30)
+                .attr('text-anchor', 'middle')
+                .attr('fill', '#ffffff')
+                .attr('font-size', '12px')
+                .text(d => d.id);
+        }
+
+        // Utility functions
+        function getSeverityColor(severity) {
+            const colors = {
+                'critical': '#ef4444',
+                'high': '#f59e0b',
+                'medium': '#00ffcc',
+                'low': '#22c55e'
+            };
+            return colors[severity] || '#00ffcc';
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'success': '#22c55e',
+                'info': '#00ffcc',
+                'warning': '#f59e0b',
+                'danger': '#ef4444'
+            };
+            return colors[status] || '#00ffcc';
+        }
+
+        function getNodeColor(type) {
+            const colors = {
+                'security': '#ef4444',
+                'server': '#3b82f6',
+                'database': '#8b5cf6',
+                'client': '#22c55e'
+            };
+            return colors[type] || '#00ffcc';
+        }
+
+        // Action functions
+        function startQuickScan() {
+            alert('Quick scan initiated! Check the Penetration Testing page for progress.');
+        }
+
+        function refreshDashboard() {
+            initializeDashboard();
+            document.getElementById('lastScanTime').textContent = 'Just now';
+        }
+
+        function loadMoreThreats() {
+            loadThreatFeed();
+        }
+
+        function refreshNetwork() {
+            initializeNetworkVisualization();
+        }
+
+        function expandNetwork() {
+            window.open('stats-unified.html', '_blank');
+        }
+
+        function startFullScan() {
+            window.location.href = 'pentest-unified.html';
+        }
+
+        function generateReport() {
+            window.location.href = 'reports-unified.html';
+        }
+
+        function updateSignatures() {
+            alert('Signature update initiated!');
+        }
+
+        function exportData() {
+            alert('Data export feature - would download CSV/JSON data');
+        }
+
+        // Update last scan time periodically
+        setInterval(() => {
+            const now = new Date();
+            const minutes = Math.floor(Math.random() * 10) + 1;
+            document.getElementById('lastScanTime').textContent = `${minutes} minutes ago`;
+        }, 30000);
+
+        // Initialize dashboard on load
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html>

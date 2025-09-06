@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfoSentinel - Professional Security Reports</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="enterprise.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="logo">
+        <i class="fas fa-shield-alt"></i>
+        <span>InfoSentinel</span>
+        <span class="pro-badge">PRO</span>
+      </div>
+      <nav class="main-nav">
+        <a href="index.html" class="nav-item">
+          <i class="fas fa-home"></i>
+          Dashboard
+        </a>
+        <a href="scan.html" class="nav-item">
+          <i class="fas fa-search"></i>
+          Professional Scan
+        </a>
+        <a href="reports.html" class="nav-item active">
+          <i class="fas fa-file-alt"></i>
+          Reports
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-cog"></i>
+          Settings
+        </a>
+      </nav>
+      <div class="user-menu">
+        <div class="user-info">
+          <span class="user-name">Admin</span>
+          <span class="user-role">Administrator</span>
+        </div>
+        <div class="user-avatar">
+          <i class="fas fa-user-circle"></i>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-content">
+      <div class="page-header">
+        <h1>Professional Security Reports</h1>
+        <p>Access detailed security assessments and compliance documentation</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Available Reports</h2>
+          <div class="card-actions">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Search reports..." id="report-search">
+            </div>
+            <select id="report-filter">
+              <option value="all">All Report Types</option>
+              <option value="standard">Standard Reports</option>
+              <option value="executive">Executive Reports</option>
+              <option value="compliance">Compliance Reports</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Target</th>
+                <th>Scan Type</th>
+                <th>Date</th>
+                <th>Vulnerabilities</th>
+                <th>Risk Score</th>
+                <th>Report Types</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="reports-table-body">
+              <tr>
+                <td>example.com</td>
+                <td>Web Application</td>
+                <td>2023-06-01</td>
+                <td><span class="badge badge-danger">12</span></td>
+                <td>
+                  <div class="risk-meter high">
+                    <span class="risk-value">7.8</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="report-types">
+                    <span class="report-type" data-type="standard">Standard</span>
+                    <span class="report-type" data-type="executive">Executive</span>
+                    <span class="report-type" data-type="compliance">Compliance</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn btn-sm btn-outline view-report" data-id="1" data-type="standard">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline download-report" data-id="1" data-type="standard">
+                      <i class="fas fa-download"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline share-report" data-id="1">
+                      <i class="fas fa-share-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>192.168.1.0/24</td>
+                <td>Network</td>
+                <td>2023-06-02</td>
+                <td><span class="badge badge-warning">5</span></td>
+                <td>
+                  <div class="risk-meter medium">
+                    <span class="risk-value">5.4</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="report-types">
+                    <span class="report-type" data-type="standard">Standard</span>
+                    <span class="report-type" data-type="executive">Executive</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn btn-sm btn-outline view-report" data-id="2" data-type="standard">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline download-report" data-id="2" data-type="standard">
+                      <i class="fas fa-download"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline share-report" data-id="2">
+                      <i class="fas fa-share-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>api.example.org</td>
+                <td>OWASP Top 10</td>
+                <td>2023-06-03</td>
+                <td><span class="badge badge-info">3</span></td>
+                <td>
+                  <div class="risk-meter low">
+                    <span class="risk-value">3.2</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="report-types">
+                    <span class="report-type" data-type="standard">Standard</span>
+                    <span class="report-type" data-type="compliance">Compliance</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn btn-sm btn-outline view-report" data-id="3" data-type="standard">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline download-report" data-id="3" data-type="standard">
+                      <i class="fas fa-download"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline share-report" data-id="3">
+                      <i class="fas fa-share-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-header">
+          <h2>Report Types</h2>
+        </div>
+        <div class="card-body">
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-file-code"></i>
+              </div>
+              <h3>Standard Technical Report</h3>
+              <p>Detailed technical analysis with comprehensive vulnerability findings and remediation steps.</p>
+              <ul>
+                <li>Complete vulnerability inventory</li>
+                <li>Technical remediation steps</li>
+                <li>Proof of concept details</li>
+                <li>Risk scoring and prioritization</li>
+              </ul>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-file-powerpoint"></i>
+              </div>
+              <h3>Executive Report</h3>
+              <p>High-level overview designed for management and decision-makers.</p>
+              <ul>
+                <li>Executive summary</li>
+                <li>Business impact analysis</li>
+                <li>Risk visualization</li>
+                <li>Strategic recommendations</li>
+              </ul>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-file-contract"></i>
+              </div>
+              <h3>Compliance Report</h3>
+              <p>Specialized report mapping findings to regulatory frameworks and standards.</p>
+              <ul>
+                <li>Compliance status overview</li>
+                <li>Framework mapping (OWASP, PCI DSS, HIPAA)</li>
+                <li>Gap analysis</li>
+                <li>Compliance roadmap</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <div class="footer-content">
+        <p>&copy; 2023 InfoSentinel. All rights reserved.</p>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact Support</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Report View Modal -->
+  <div class="modal" id="report-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Security Report</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="report-loading">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Loading report...</p>
+        </div>
+        <iframe id="report-frame" style="width: 100%; height: 600px; border: none;"></iframe>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline modal-close-btn">Close</button>
+        <button class="btn btn-primary download-open-report">
+          <i class="fas fa-download"></i> Download
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Report search functionality
+      const reportSearch = document.getElementById('report-search');
+      const reportFilter = document.getElementById('report-filter');
+      const reportsTableBody = document.getElementById('reports-table-body');
+      
+      reportSearch.addEventListener('input', filterReports);
+      reportFilter.addEventListener('change', filterReports);
+      
+      function filterReports() {
+        const searchTerm = reportSearch.value.toLowerCase();
+        const filterType = reportFilter.value;
+        
+        const rows = reportsTableBody.querySelectorAll('tr');
+        
+        rows.forEach(row => {
+          const target = row.cells[0].textContent.toLowerCase();
+          const scanType = row.cells[1].textContent.toLowerCase();
+          const reportTypes = row.querySelector('.report-types').textContent.toLowerCase();
+          
+          const matchesSearch = target.includes(searchTerm) || 
+                               scanType.includes(searchTerm);
+          
+          const matchesFilter = filterType === 'all' || 
+                               (filterType === 'standard' && reportTypes.includes('standard')) ||
+                               (filterType === 'executive' && reportTypes.includes('executive')) ||
+                               (filterType === 'compliance' && reportTypes.includes('compliance'));
+          
+          row.style.display = matchesSearch && matchesFilter ? '' : 'none';
+        });
+      }
+      
+      // Report modal functionality
+      const reportModal = document.getElementById('report-modal');
+      const reportFrame = document.getElementById('report-frame');
+      const reportLoading = document.querySelector('.report-loading');
+      const modalCloseButtons = document.querySelectorAll('.modal-close, .modal-close-btn');
+      const viewReportButtons = document.querySelectorAll('.view-report');
+      const downloadOpenReport = document.querySelector('.download-open-report');
+      
+      viewReportButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const reportId = this.getAttribute('data-id');
+          const reportType = this.getAttribute('data-type');
+          
+          // Show modal and loading indicator
+          reportModal.style.display = 'flex';
+          reportLoading.style.display = 'flex';
+          reportFrame.style.display = 'none';
+          
+          // Set download button data
+          downloadOpenReport.setAttribute('data-id', reportId);
+          downloadOpenReport.setAttribute('data-type', reportType);
+          
+          // Simulate loading report
+          setTimeout(() => {
+            // Hide loading indicator and show iframe
+            reportLoading.style.display = 'none';
+            reportFrame.style.display = 'block';
+            
+            // Load report into iframe (in a real app, this would be a real endpoint)
+            reportFrame.src = `/api/reports/${reportId}?type=${reportType}`;
+          }, 1500);
+        });
+      });
+      
+      modalCloseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          reportModal.style.display = 'none';
+          reportFrame.src = '';
+        });
+      });
+      
+      // Close modal when clicking outside
+      window.addEventListener('click', function(event) {
+        if (event.target === reportModal) {
+          reportModal.style.display = 'none';
+          reportFrame.src = '';
+        }
+      });
+      
+      // Download report functionality
+      const downloadReportButtons = document.querySelectorAll('.download-report');
+      
+      downloadReportButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const reportId = this.getAttribute('data-id');
+          const reportType = this.getAttribute('data-type');
+          
+          // In a real app, this would trigger a download
+          alert(`Downloading ${reportType} report for scan ${reportId}`);
+        });
+      });
+      
+      downloadOpenReport.addEventListener('click', function() {
+        const reportId = this.getAttribute('data-id');
+        const reportType = this.getAttribute('data-type');
+        
+        // In a real app, this would trigger a download
+        alert(`Downloading ${reportType} report for scan ${reportId}`);
+      });
+      
+      // Share report functionality
+      const shareReportButtons = document.querySelectorAll('.share-report');
+      
+      shareReportButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const reportId = this.getAttribute('data-id');
+          
+          // In a real app, this would open a sharing dialog
+          alert(`Sharing options for report ${reportId}`);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

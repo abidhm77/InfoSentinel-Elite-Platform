@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoSentinel Compliance Security Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1f2c, #2c3e50);
+            color: white;
+            padding: 30px;
+            border-radius: 5px 5px 0 0;
+        }
+        .report-meta {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 1px solid #dee2e6;
+            border-right: 1px solid #dee2e6;
+        }
+        .framework {
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        .category {
+            border-left: 5px solid #007bff;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+        }
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .pass {
+            background-color: #28a745;
+            color: white;
+        }
+        .fail {
+            background-color: #dc3545;
+            color: white;
+        }
+        .partial {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .finding {
+            margin-left: 20px;
+            padding: 10px;
+            border-left: 3px solid #dee2e6;
+            margin-bottom: 10px;
+        }
+        .critical {
+            border-color: #dc3545;
+        }
+        .high {
+            border-color: #fd7e14;
+        }
+        .medium {
+            border-color: #ffc107;
+        }
+        .low {
+            border-color: #17a2b8;
+        }
+        .info {
+            border-color: #6c757d;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 0 0 5px 5px;
+            border: 1px solid #dee2e6;
+            border-top: none;
+        }
+        .summary {
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        .compliance-summary {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .compliance-chart {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: white;
+            background: conic-gradient(#28a745 var(--percent), #dc3545 var(--percent));
+        }
+        .chart-inner {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>InfoSentinel Compliance Security Report</h1>
+            <p>Compliance-focused security assessment for {{ target }}</p>
+        </div>
+        
+        <div class="report-meta">
+            <p><strong>Scan ID:</strong> {{ scan_id }}</p>
+            <p><strong>Target:</strong> {{ target }}</p>
+            <p><strong>Scan Type:</strong> {{ scan_type }}</p>
+            <p><strong>Start Time:</strong> {{ start_time.strftime('%Y-%m-%d %H:%M:%S UTC') }}</p>
+            <p><strong>End Time:</strong> {{ end_time.strftime('%Y-%m-%d %H:%M:%S UTC') }}</p>
+            <p><strong>Duration:</strong> {{ '%0.2f'|format(duration/60) }} minutes</p>
+            <p><strong>Status:</strong> {{ status }}</p>
+            <p><strong>Report Generated:</strong> {{ report_date.strftime('%Y-%m-%d %H:%M:%S UTC') }}</p>
+        </div>
+        
+        <div class="summary">
+            <h2>Compliance Summary</h2>
+            <p>This report evaluates the compliance status of {{ target }} against industry-standard security frameworks.</p>
+            
+            <div class="compliance-summary">
+                {% for framework_id, framework in compliance_frameworks.items() %}
+                {% set total_categories = framework.categories|length %}
+                {% set compliant_categories = 0 %}
+                
+                {% for category_id, category in framework.categories.items() %}
+                {% if category.vulns|length == 0 %}
+                {% set compliant_categories = compliant_categories + 1 %}
+                {% endif %}
+                {% endfor %}
+                
+                {% set compliance_percent = (compliant_categories / total_categories * 100)|round %}
+                {% set percent_value = compliance_percent|string ~ '%' %}
+                
+                <div>
+                    <h3>{{ framework.name }}</h3>
+                    <div class="compliance-chart" style="--percent: {{ percent_value }}">
+                        <div class="chart-inner">
+                            <span>{{ compliance_percent }}%</span>
+                        </div>
+                    </div>
+                    <p>{{ compliant_categories }} of {{ total_categories }} controls compliant</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        {% for framework_id, framework in compliance_frameworks.items() %}
+        <div class="framework">
+            <h2>{{ framework.name }}</h2>
+            
+            {% for category_id, category in framework.categories.items() %}
+            <div class="category">
+                <div class="category-header">
+                    <h3>{{ category_id }}: {{ category.name }}</h3>
+                    
+                    {% if category.vulns|length == 0 %}
+                    <span class="status pass">PASS</span>
+                    {% else %}
+                    <span class="status fail">FAIL</span>
+                    {% endif %}
+                </div>
+                
+                {% if category.vulns|length > 0 %}
+                <p>The following vulnerabilities were identified:</p>
+                
+                {% for vuln in category.vulns %}
+                <div class="finding {{ vuln.severity }}">
+                    <p><strong>{{ vuln.description }}</strong></p>
+                    <p><strong>Severity:</strong> 
+                        {% if vuln.severity == 'critical' %}
+                        <span style="color: #dc3545; font-weight: bold;">Critical</span>
+                        {% elif vuln.severity == 'high' %}
+                        <span style="color: #fd7e14; font-weight: bold;">High</span>
+                        {% elif vuln.severity == 'medium' %}
+                        <span style="color: #ffc107; font-weight: bold;">Medium</span>
+                        {% elif vuln.severity == 'low' %}
+                        <span style="color: #17a2b8; font-weight: bold;">Low</span>
+                        {% else %}
+                        <span style="color: #6c757d; font-weight: bold;">Info</span>
+                        {% endif %}
+                    </p>
+                    
+                    {% if vuln.remediation %}
+                    <p><strong>Remediation:</strong> {{ vuln.remediation }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                {% else %}
+                <p>No vulnerabilities were identified for this control.</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        
+        <div class="footer">
+            <p>This report was generated by InfoSentinel Professional Security Scanner.</p>
+            <p>This report is for compliance assessment purposes only and should be reviewed by security professionals.</p>
+            <p>&copy; {{ report_date.year }} InfoSentinel. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

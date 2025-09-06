@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfoSentinel - Elite Tactical Security Scanner</title>
+  <link rel="stylesheet" href="enterprise.css?v=1.0">
+  <link rel="stylesheet" href="cyber-design-system.css?v=3.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <header class="cyber-nav">
+      <div class="cyber-container">
+        <div class="cyber-nav-container">
+          <div class="cyber-nav-brand">
+            <i class="fas fa-shield-alt" style="color: var(--cyber-primary);"></i>
+            <span>InfoSentinel</span>
+            <span class="cyber-badge cyber-badge-secure" style="margin-left: var(--space-sm);">ELITE</span>
+          </div>
+          <nav class="cyber-nav-menu">
+            <a href="index.html" class="cyber-nav-link">
+              <i class="fas fa-home"></i>
+              Command Center
+            </a>
+            <a href="scan.html" class="cyber-nav-link active">
+              <i class="fas fa-crosshairs"></i>
+              Tactical Scanner
+            </a>
+            <a href="ai-pentest.html" class="cyber-nav-link">
+              <i class="fas fa-mobile-alt"></i>
+              Mobile & IoT
+            </a>
+            <a href="reports.html" class="cyber-nav-link">
+              <i class="fas fa-chart-line"></i>
+              Intelligence
+            </a>
+            <a href="#" class="cyber-nav-link">
+              <i class="fas fa-cog"></i>
+              Operations
+            </a>
+          </nav>
+          <div class="cyber-flex cyber-items-center cyber-gap-md">
+            <div class="cyber-flex cyber-flex-col" style="text-align: right;">
+              <span class="cyber-text-primary" style="font-size: var(--text-sm); font-weight: var(--font-semibold);">Security Operator</span>
+              <span class="cyber-text-secondary" style="font-size: var(--text-xs);">Level 5 Clearance</span>
+            </div>
+            <div class="cyber-flex cyber-items-center" style="color: var(--cyber-primary); font-size: var(--text-xl);">
+              <i class="fas fa-user-shield"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="cyber-container" style="padding-top: var(--space-xl);">
+      <div class="cyber-animate-slide-up" style="margin-bottom: var(--space-2xl);">
+        <h1 style="font-family: var(--font-mono); font-size: var(--text-4xl); font-weight: var(--font-bold); color: var(--text-primary); margin-bottom: var(--space-sm);">TACTICAL SECURITY SCANNER</h1>
+        <p style="color: var(--text-secondary); font-size: var(--text-lg);">Deploy advanced reconnaissance and vulnerability assessment protocols</p>
+        <div style="height: 2px; width: 100px; background: linear-gradient(90deg, var(--cyber-primary), transparent); margin-top: var(--space-md);"></div>
+      </div>
+
+      <div class="cyber-card cyber-animate-slide-up">
+        <div class="cyber-card-header">
+          <h2 class="cyber-card-title">
+            <i class="fas fa-crosshairs" style="color: var(--cyber-primary); margin-right: var(--space-sm);"></i>
+            INITIATE SECURITY ASSESSMENT
+          </h2>
+          <p class="cyber-card-subtitle">Configure target parameters and select engagement protocols</p>
+        </div>
+        <div>
+          <form id="professional-scan-form">
+            <div class="cyber-form-group">
+              <label class="cyber-label" for="target">
+                <i class="fas fa-bullseye" style="margin-right: var(--space-xs); color: var(--cyber-primary);"></i>
+                TARGET DESIGNATION
+              </label>
+              <input class="cyber-input" type="text" id="target" name="target" placeholder="https://target.domain.com or 192.168.1.100" required>
+              <small style="color: var(--text-muted); font-size: var(--text-xs); margin-top: var(--space-xs); display: block;">Specify full URL with protocol or IP address for direct engagement</small>
+            </div>
+
+            <div class="cyber-form-group">
+              <label class="cyber-label">
+                <i class="fas fa-list-ul" style="margin-right: var(--space-xs); color: var(--cyber-secondary);"></i>
+                ENGAGEMENT PROTOCOL
+              </label>
+              <div class="cyber-grid-2" style="gap: var(--space-md);">
+                <label class="cyber-card" style="padding: var(--space-md); cursor: pointer; transition: all var(--transition-normal);" onclick="selectScanType(this, 'webapp')">
+                  <input type="radio" name="scan_type" value="webapp" checked style="margin-right: var(--space-sm);">
+                  <div>
+                    <div style="font-weight: var(--font-semibold); color: var(--cyber-primary); margin-bottom: var(--space-xs);">WEB APPLICATION ASSAULT</div>
+                    <div style="font-size: var(--text-sm); color: var(--text-secondary);">OWASP Top 10, XSS, SQL injection, CSRF exploitation</div>
+                  </div>
+                </label>
+                <label class="cyber-card" style="padding: var(--space-md); cursor: pointer; transition: all var(--transition-normal);" onclick="selectScanType(this, 'network')">
+                  <input type="radio" name="scan_type" value="network" style="margin-right: var(--space-sm);">
+                  <div>
+                    <div style="font-weight: var(--font-semibold); color: var(--cyber-secondary); margin-bottom: var(--space-xs);">NETWORK RECONNAISSANCE</div>
+                    <div style="font-size: var(--text-sm); color: var(--text-secondary);">Port discovery, service enumeration, vulnerability mapping</div>
+                  </div>
+                </label>
+                <label class="cyber-card" style="padding: var(--space-md); cursor: pointer; transition: all var(--transition-normal);" onclick="selectScanType(this, 'port')">
+                  <input type="radio" name="scan_type" value="port" style="margin-right: var(--space-sm);">
+                  <div>
+                    <div style="font-weight: var(--font-semibold); color: var(--cyber-warning); margin-bottom: var(--space-xs);">ADVANCED PORT SWEEP</div>
+                    <div style="font-size: var(--text-sm); color: var(--text-secondary);">Comprehensive scanning with OS fingerprinting</div>
+                  </div>
+                </label>
+                <label class="cyber-card" style="padding: var(--space-md); cursor: pointer; transition: all var(--transition-normal);" onclick="selectScanType(this, 'owasp')">
+                  <input type="radio" name="scan_type" value="owasp" style="margin-right: var(--space-sm);">
+                  <div>
+                    <div style="font-weight: var(--font-semibold); color: var(--cyber-accent); margin-bottom: var(--space-xs);">OWASP COMPLIANCE AUDIT</div>
+                    <div style="font-size: var(--text-sm); color: var(--text-secondary);">Focused assessment of critical web vulnerabilities</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="cyber-grid-2" style="gap: var(--space-lg);">
+              <div class="cyber-form-group">
+                <label class="cyber-label" for="port-range">
+                  <i class="fas fa-network-wired" style="margin-right: var(--space-xs); color: var(--cyber-info);"></i>
+                  PORT RANGE SELECTION
+                </label>
+                <select id="port-range" name="port_range" class="cyber-select scan-option network-option port-option">
+                  <option value="common">COMMON PORTS (1-1024)</option>
+                  <option value="all">FULL SPECTRUM (1-65535)</option>
+                  <option value="web">WEB SERVICES (80,443,8080,8443)</option>
+                  <option value="service">CRITICAL SERVICES (20-25,53,110-143,389,636)</option>
+                </select>
+              </div>
+              <div class="cyber-form-group">
+                <label class="cyber-label" for="scan-depth">
+                  <i class="fas fa-tachometer-alt" style="margin-right: var(--space-xs); color: var(--cyber-warning);"></i>
+                  ENGAGEMENT INTENSITY
+                </label>
+                <select id="scan-depth" name="scan_depth" class="cyber-select">
+                  <option value="standard">TACTICAL STANDARD (Balanced approach)</option>
+                  <option value="deep">DEEP PENETRATION (Maximum coverage)</option>
+                  <option value="stealth">STEALTH MODE (Low signature, extended duration)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="cyber-form-group webapp-option owasp-option">
+              <label class="cyber-label">
+                <i class="fas fa-shield-virus" style="margin-right: var(--space-xs); color: var(--cyber-danger);"></i>
+                OWASP ATTACK VECTORS
+              </label>
+              <div class="cyber-grid-2" style="gap: var(--space-sm);">
+                <label class="cyber-flex cyber-items-center cyber-gap-sm" style="cursor: pointer;">
+                  <input type="checkbox" name="owasp_options" value="broken_auth" checked style="margin: 0;">
+                  <span class="cyber-text-secondary">Authentication Bypass</span>
+                </label>
+                <label class="cyber-flex cyber-items-center cyber-gap-sm" style="cursor: pointer;">
+                  <input type="checkbox" name="owasp_options" value="injection" checked style="margin: 0;">
+                  <span class="cyber-text-secondary">Injection Exploits</span>
+                </label>
+                <label class="cyber-flex cyber-items-center cyber-gap-sm" style="cursor: pointer;">
+                  <input type="checkbox" name="owasp_options" value="xss" checked style="margin: 0;">
+                  <span class="cyber-text-secondary">Cross-Site Scripting</span>
+                </label>
+                <label class="cyber-flex cyber-items-center cyber-gap-sm" style="cursor: pointer;">
+                  <input type="checkbox" name="owasp_options" value="csrf" checked style="margin: 0;">
+                  <span class="cyber-text-secondary">Request Forgery</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="cyber-form-group network-option port-option">
+              <label class="cyber-label">
+                <i class="fas fa-cogs" style="margin-right: var(--space-xs); color: var(--cyber-accent);"></i>
+                ADVANCED RECONNAISSANCE
+              </label>
+              <div class="cyber-grid-3" style="gap: var(--space-sm);">
+                <label class="cyber-flex cyber-items-center cyber-gap-sm" style="cursor: pointer;">
+                  <input type="checkbox" name="advanced_options" value="service_detection" checked style="margin: 0;">
+                  <span class="cyber-text-secondary">Service Fingerprinting</span>
+                </label>
+                <label class="cyber-flex cyber-items-center cyber-gap-sm" style="cursor: pointer;">
+                  <input type="checkbox" name="advanced_options" value="os_detection" style="margin: 0;">
+                  <span class="cyber-text-secondary">OS Detection</span>
+                </label>
+                <label class="cyber-flex cyber-items-center cyber-gap-sm" style="cursor: pointer;">
+                  <input type="checkbox" name="advanced_options" value="script_scan" style="margin: 0;">
+                  <span class="cyber-text-secondary">Vulnerability Scripts</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="cyber-form-group">
+              <label class="cyber-label" for="report-type">
+                <i class="fas fa-file-alt" style="margin-right: var(--space-xs); color: var(--cyber-info);"></i>
+                INTELLIGENCE REPORT FORMAT
+              </label>
+              <select id="report-type" name="report_type" class="cyber-select">
+                <option value="standard">TECHNICAL INTELLIGENCE BRIEF</option>
+                <option value="executive">EXECUTIVE THREAT SUMMARY</option>
+                <option value="compliance">COMPLIANCE ASSESSMENT</option>
+              </select>
+            </div>
+
+            <div class="cyber-flex cyber-gap-md" style="margin-top: var(--space-xl);">
+              <button type="submit" class="cyber-btn cyber-btn-primary cyber-btn-lg" style="flex: 1;">
+                <i class="fas fa-crosshairs" style="margin-right: var(--space-sm);"></i>
+                INITIATE SCAN PROTOCOL
+              </button>
+              <button type="button" class="cyber-btn cyber-btn-secondary">
+                <i class="fas fa-clock" style="margin-right: var(--space-sm);"></i>
+                SCHEDULE MISSION
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-header">
+          <h2>Professional Scanning Capabilities</h2>
+        </div>
+        <div class="card-body">
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-spider"></i>
+              </div>
+              <h3>Web Application Security</h3>
+              <ul>
+                <li>OWASP Top 10 vulnerability detection</li>
+                <li>Cross-site scripting (XSS) identification</li>
+                <li>SQL injection testing</li>
+                <li>CSRF token validation</li>
+                <li>Security header analysis</li>
+              </ul>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-network-wired"></i>
+              </div>
+              <h3>Network Reconnaissance</h3>
+              <ul>
+                <li>Advanced port scanning techniques</li>
+                <li>Service fingerprinting</li>
+                <li>Operating system detection</li>
+                <li>Network topology mapping</li>
+                <li>Firewall and IDS evasion techniques</li>
+              </ul>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-user-secret"></i>
+              </div>
+              <h3>Vulnerability Assessment</h3>
+              <ul>
+                <li>CVE database correlation</li>
+                <li>Exploit possibility analysis</li>
+                <li>Severity classification</li>
+                <li>False positive reduction</li>
+                <li>Vulnerability chaining detection</li>
+              </ul>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <i class="fas fa-file-contract"></i>
+              </div>
+              <h3>Professional Reporting</h3>
+              <ul>
+                <li>Executive summaries for management</li>
+                <li>Detailed technical reports</li>
+                <li>Compliance mapping (PCI DSS, HIPAA)</li>
+                <li>Remediation recommendations</li>
+                <li>Risk scoring and prioritization</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <div class="footer-content">
+        <p>&copy; 2023 InfoSentinel. All rights reserved.</p>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact Support</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Tactical Scanner Interface Enhancement
+    function selectScanType(element, scanType) {
+      // Remove active state from all cards
+      document.querySelectorAll('.cyber-card[onclick*="selectScanType"]').forEach(card => {
+        card.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        card.style.boxShadow = 'var(--shadow-lg)';
+      });
+      
+      // Add active state to selected card
+      element.style.borderColor = 'var(--cyber-primary)';
+      element.style.boxShadow = 'var(--shadow-glow)';
+      
+      // Update scan options visibility
+      updateScanOptions(scanType);
+    }
+    
+    function updateScanOptions(scanType) {
+      const options = {
+        'webapp': ['.webapp-option', '.owasp-option'],
+        'network': ['.network-option'],
+        'port': ['.port-option', '.network-option'],
+        'owasp': ['.webapp-option', '.owasp-option']
+      };
+      
+      // Hide all options first
+      document.querySelectorAll('.webapp-option, .network-option, .port-option, .owasp-option').forEach(el => {
+        el.style.display = 'none';
+      });
+      
+      // Show relevant options
+      if (options[scanType]) {
+        options[scanType].forEach(selector => {
+          document.querySelectorAll(selector).forEach(el => {
+            el.style.display = 'block';
+          });
+        });
+      }
+    }
+    
+    function showAdvancedOptions() {
+      // Toggle advanced options visibility
+      const advancedSections = document.querySelectorAll('.network-option, .port-option');
+      advancedSections.forEach(section => {
+        section.style.display = section.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+    
+    // Initialize interface
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set initial scan type
+      updateScanOptions('webapp');
+      
+      // Add glow effect to active elements
+      document.querySelectorAll('.cyber-btn-primary').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+          this.style.boxShadow = 'var(--shadow-lg), var(--shadow-glow-green)';
+        });
+        btn.addEventListener('mouseleave', function() {
+          this.style.boxShadow = 'var(--shadow-md)';
+        });
+      });
+      
+      // Form submission with tactical feedback
+      document.getElementById('professional-scan-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        
+        // Show scanning state
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right: var(--space-sm);"></i>SCANNING IN PROGRESS';
+        submitBtn.disabled = true;
+        submitBtn.style.background = 'linear-gradient(135deg, var(--cyber-warning), var(--cyber-secondary))';
+        
+        // Simulate scan process
+        setTimeout(() => {
+          submitBtn.innerHTML = '<i class="fas fa-check" style="margin-right: var(--space-sm);"></i>SCAN COMPLETED';
+          submitBtn.style.background = 'linear-gradient(135deg, var(--cyber-primary), var(--cyber-secondary))';
+          
+          setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            submitBtn.style.background = '';
+          }, 2000);
+        }, 3000);
+      });
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Show/hide scan options based on scan type
+      const scanTypeRadios = document.querySelectorAll('input[name="scan_type"]');
+      const updateVisibleOptions = () => {
+        const selectedType = document.querySelector('input[name="scan_type"]:checked').value;
+        
+        // Hide all option sections first
+        document.querySelectorAll('.scan-option').forEach(el => {
+          el.closest('.form-group, .form-row').style.display = 'none';
+        });
+        
+        // Show relevant sections based on selection
+        document.querySelectorAll(`.${selectedType}-option`).forEach(el => {
+          el.closest('.form-group, .form-row').style.display = 'block';
+        });
+        
+        // Special case for port scanner which should show network options
+        if (selectedType === 'port') {
+          document.querySelectorAll('.network-option').forEach(el => {
+            el.closest('.form-group, .form-row').style.display = 'block';
+          });
+        }
+      };
+      
+      scanTypeRadios.forEach(radio => {
+        radio.addEventListener('change', updateVisibleOptions);
+      });
+      
+      // Initial setup
+      updateVisibleOptions();
+      
+      // Form submission
+      document.getElementById('professional-scan-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Starting Scan...';
+        submitBtn.disabled = true;
+        
+        // Collect form data
+        const formData = new FormData(this);
+        const scanData = {};
+        
+        for (const [key, value] of formData.entries()) {
+          if (scanData[key]) {
+            if (!Array.isArray(scanData[key])) {
+              scanData[key] = [scanData[key]];
+            }
+            scanData[key].push(value);
+          } else {
+            scanData[key] = value;
+          }
+        }
+        
+        // Simulate API call
+        setTimeout(() => {
+          console.log('Starting professional scan with options:', scanData);
+          
+          // Redirect to dashboard with success message
+          alert('Professional scan started successfully! You will be redirected to the dashboard to monitor progress.');
+          window.location.href = 'index.html';
+        }, 2000);
+      });
+    });
+  </script>
+</body>
+</html>

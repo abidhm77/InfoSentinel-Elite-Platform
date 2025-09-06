@@ -1,0 +1,138 @@
+#!/bin/bash
+
+# Colors for terminal output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}Setting up World-Class Automated Penetration Testing Platform...${NC}"
+
+# Create necessary directories if they don't exist
+mkdir -p frontend/public
+
+# Create a simple index.html for testing
+cat > frontend/public/index.html << 'EOL'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfoSentinel - Penetration Testing Platform</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    header {
+      background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+      color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+    .subtitle {
+      opacity: 0.9;
+      font-weight: 300;
+      margin-top: 0.5rem;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+    .feature {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      border: 1px solid #eee;
+    }
+    .feature h3 {
+      margin-top: 0;
+      color: #3a7bd5;
+    }
+    .cta {
+      background: #3a7bd5;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+    .cta:hover {
+      background: #2a5db2;
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: #666;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>InfoSentinel</h1>
+    <p class="subtitle">World-Class Automated Penetration Testing Platform</p>
+  </header>
+
+  <main>
+    <p>Welcome to InfoSentinel, a comprehensive, automated penetration testing platform designed to identify, analyze, and report security vulnerabilities in web applications, networks, and systems.</p>
+    
+    <div class="features">
+      <div class="feature">
+        <h3>Web Application Scanning</h3>
+        <p>Detect XSS, SQL injection, CSRF, insecure headers, and other common web vulnerabilities.</p>
+      </div>
+      <div class="feature">
+        <h3>Network Vulnerability Detection</h3>
+        <p>Identify open ports, insecure services, and network configuration issues.</p>
+      </div>
+      <div class="feature">
+        <h3>System Security Analysis</h3>
+        <p>Check for OS vulnerabilities, misconfigurations, and privilege escalation vectors.</p>
+      </div>
+      <div class="feature">
+        <h3>Comprehensive Reporting</h3>
+        <p>Generate detailed reports with severity ratings and remediation recommendations.</p>
+      </div>
+      <div class="feature">
+        <h3>Continuous Monitoring</h3>
+        <p>Schedule regular scans to maintain ongoing security awareness.</p>
+      </div>
+      <div class="feature">
+        <h3>Compliance Mapping</h3>
+        <p>Map findings to security standards like OWASP, CWE, and CVE.</p>
+      </div>
+    </div>
+
+    <p>The full application is currently under development. This page is a placeholder for the upcoming platform.</p>
+    <button class="cta">Learn More</button>
+  </main>
+
+  <footer>
+    <p>&copy; 2023 InfoSentinel. All rights reserved.</p>
+  </footer>
+</body>
+</html>
+EOL
+
+echo -e "${GREEN}Setup complete! You can now run the application.${NC}"
+echo -e "${BLUE}To view the frontend placeholder, open the file:${NC}"
+echo -e "${GREEN}frontend/public/index.html${NC}"
+echo -e "${BLUE}To start development:${NC}"
+echo -e "${GREEN}1. Backend: cd backend && python app.py${NC}"
+echo -e "${GREEN}2. Frontend: cd frontend && npm install && npm run dev${NC}"

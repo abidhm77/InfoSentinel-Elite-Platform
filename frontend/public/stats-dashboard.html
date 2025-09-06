@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfoSentinel - Security Statistics Dashboard</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="js/security-stat-cards.js" defer></script>
+  <script src="js/stats-updater.js" defer></script>
+  <script src="js/security-charts.js" defer></script>
+  <script src="js/notification-system.js" defer></script>
+  <style>
+    :root {
+      --primary-bg: #0f1016;
+      --card-bg: rgba(30, 30, 40, 0.7);
+      --accent-color: #4a4af7;
+      --text-color: #e0e0e0;
+      --text-secondary: #aaaaaa;
+      --border-color: rgba(100, 100, 255, 0.2);
+      --success-color: #4CAF50;
+      --warning-color: #FF9800;
+      --danger-color: #F44336;
+      --info-color: #2196F3;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--primary-bg);
+      background-image: 
+        radial-gradient(circle at 25% 25%, rgba(50, 50, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(50, 50, 255, 0.1) 0%, transparent 50%);
+      color: var(--text-color);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    
+    .dashboard-title {
+      display: flex;
+      align-items: center;
+    }
+    
+    .dashboard-title h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin: 0;
+      background: linear-gradient(to right, #fff, #aaa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .dashboard-title .logo {
+      margin-right: 15px;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #4a4af7, #2c2cf0);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(74, 74, 247, 0.5);
+    }
+    
+    .dashboard-title .logo svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+    
+    .dashboard-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .dashboard-actions button {
+      background: rgba(60, 60, 90, 0.3);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .dashboard-actions button:hover {
+      background: rgba(70, 70, 120, 0.4);
+      color: var(--text-color);
+      border-color: rgba(100, 100, 255, 0.4);
+    }
+    
+    .dashboard-actions button svg {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .dashboard-actions .primary-button {
+      background: linear-gradient(to right, #4a4af7, #2c2cf0);
+      color: white;
+      border: none;
+    }
+    
+    .dashboard-actions .primary-button:hover {
+      box-shadow: 0 0 15px rgba(74, 74, 247, 0.3);
+      transform: translateY(-1px);
+    }
+    
+    .stats-cards-section {
+      margin-bottom: 30px;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .section-header h2 {
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--text-color);
+    }
+    
+    .section-header .section-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .section-header .section-actions button {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.2s;
+    }
+    
+    .section-header .section-actions button:hover {
+      color: var(--text-color);
+    }
+    
+    .charts-section {
+      margin-bottom: 30px;
+    }
+    
+    .dashboard-footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(100, 100, 255, 0.1);
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+    
+    /* API Status Indicator */
+    .api-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: 15px;
+      font-size: 0.8rem;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    
+    .status-dot.connected {
+      background-color: var(--success-color);
+    }
+    
+    .status-dot.disconnected {
+      background-color: var(--danger-color);
+    }
+    
+    .status-dot.checking {
+      background-color: var(--warning-color);
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+    
+    /* Export dropdown */
+    .export-dropdown {
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: rgba(40, 40, 60, 0.95);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      min-width: 180px;
+      z-index: 100;
+      display: none;
+      margin-top: 5px;
+    }
+    
+    .export-dropdown.active {
+      display: block;
+    }
+    
+    .export-option {
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .export-option:hover {
+      background: rgba(80, 80, 120, 0.4);
+      color: var(--text-color);
+    }
+    
+    .export-menu {
+      position: relative;
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .dashboard-actions {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <div class="dashboard-title">
+        <a href="index-unified.html" class="logo" aria-label="InfoSentinel Home" style="text-decoration:none;color:inherit;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+          </svg>
+        </a>
+        <h1>InfoSentinel Security Dashboard</h1>
+        <div class="api-status">
+          <div class="status-dot checking" id="apiStatus"></div>
+          <span id="apiStatusText">Checking API...</span>
+        </div>
+      </div>
+      
+      <div class="dashboard-actions">
+        <button onclick="window.location.href='index.html'">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+          Home
+        </button>
+        <button>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h-2v-4H8v-2h4V7h2v4h4v2h-4v4z"/>
+          </svg>
+          New Scan
+        </button>
+        <div class="export-menu">
+          <button class="primary-button" id="exportBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>
+            </svg>
+            Export Report
+          </button>
+          <div class="export-dropdown" id="exportDropdown">
+            <div class="export-option" data-format="pdf">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/>
+              </svg>
+              Export as PDF
+            </div>
+            <div class="export-option" data-format="csv">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+              </svg>
+              Export as CSV
+            </div>
+            <div class="export-option" data-format="json">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/>
+              </svg>
+              Export as JSON
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="stats-cards-section">
+      <div class="section-header">
+        <h2>Security Overview</h2>
+        <div class="section-actions">
+          <button id="refresh-stats">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+              <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+      
+      <security-stat-cards></security-stat-cards>
+    </div>
+    
+    <div class="charts-section">
+      <div class="section-header">
+        <h2>Historical Analysis</h2>
+        <div class="section-actions">
+          <button id="export-charts">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+            </svg>
+            Export
+          </button>
+        </div>
+      </div>
+      
+      <div id="security-charts"></div>
+    </div>
+    
+    <div class="dashboard-footer">
+      <p>© 2023 InfoSentinel Security Platform | Version 1.0.2</p>
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // API status elements
+      const apiStatus = document.getElementById('apiStatus');
+      const apiStatusText = document.getElementById('apiStatusText');
+      
+      // Check API connection
+      function checkApiConnection() {
+        apiStatus.className = 'status-dot checking';
+        apiStatusText.textContent = 'Checking API...';
+        
+        fetch('/api/health')
+          .then(response => {
+            if (response.ok) {
+              apiStatus.className = 'status-dot connected';
+              apiStatusText.textContent = 'API Connected';
+              return true;
+            } else {
+              throw new Error('API health check failed');
+            }
+          })
+          .catch(error => {
+            console.error('API connection error:', error);
+            apiStatus.className = 'status-dot disconnected';
+            apiStatusText.textContent = 'API Disconnected';
+            return false;
+          });
+      }
+      
+      // Check API connection on load
+      checkApiConnection();
+      
+      // Set up periodic API connection check
+      setInterval(checkApiConnection, 30000); // Check every 30 seconds
+      
+      // Initialize security charts
+      const securityCharts = new SecurityCharts('security-charts', {
+        timeRange: '7d',
+        refreshInterval: 60000, // 1 minute
+        apiEndpoint: '/api/security-stats/history',
+        onChartClick: (chartType, index, data) => {
+          console.log(`Chart clicked: ${chartType} at index ${index}`);
+        }
+      });
+      
+      // Initialize notification system
+      const notificationSystem = new NotificationSystem({
+        apiEndpoint: '/api/notifications',
+        pollInterval: 10000
+      });
+      
+      // Export dropdown functionality
+      const exportBtn = document.getElementById('exportBtn');
+      const exportDropdown = document.getElementById('exportDropdown');
+      
+      exportBtn.addEventListener('click', () => {
+        exportDropdown.classList.toggle('active');
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (event) => {
+        if (!exportBtn.contains(event.target) && !exportDropdown.contains(event.target)) {
+          exportDropdown.classList.remove('active');
+        }
+      });
+      
+      // Handle export options
+      const exportOptions = document.querySelectorAll('.export-option');
+      exportOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          const format = option.dataset.format;
+          console.log(`Exporting report in ${format} format...`);
+          
+          // Call the API to generate the export
+          fetch(`/api/export?format=${format}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              reportType: 'security',
+              timeRange: '30d'
+            })
+          })
+          .then(response => {
+            if (response.ok) {
+              return response.blob();
+            }
+            throw new Error('Export failed');
+          })
+          .then(blob => {
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `security-report.${format}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+          })
+          .catch(error => {
+            console.error('Export error:', error);
+            alert('Failed to export report. Please try again.');
+          });
+          
+          exportDropdown.classList.remove('active');
+        });
+      });
+      
+      // Refresh stats button
+      document.getElementById('refresh-stats').addEventListener('click', function() {
+        // Check API connection first
+        const isConnected = checkApiConnection();
+        
+        const statCards = document.querySelector('security-stat-cards');
+        if (statCards) {
+          statCards.updateStats();
+        }
+        
+        // Add a visual feedback for refresh button
+        this.classList.add('refreshing');
+        setTimeout(() => {
+          this.classList.remove('refreshing');
+        }, 500);
+      });
+      
+      // Export charts button
+      document.getElementById('export-charts').addEventListener('click', function() {
+        if (securityCharts && typeof securityCharts.exportChartData === 'function') {
+          securityCharts.exportChartData();
+        } else {
+          alert('Chart export functionality is not available.');
+        }
+      });
+      
+      // Listen for stat card clicks
+      document.addEventListener('stat-card-click', function(e) {
+        console.log('Stat card clicked:', e.detail);
+      });
+    });
+  </script>
+</body>
+</html>

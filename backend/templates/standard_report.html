@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoSentinel Security Report</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a1f2c, #2c3e50);
+            color: white;
+            padding: 20px;
+            border-radius: 5px 5px 0 0;
+        }
+        .report-meta {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 1px solid #dee2e6;
+            border-right: 1px solid #dee2e6;
+        }
+        .summary {
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        .risk-score {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: white;
+        }
+        .severity-distribution {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .severity-box {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            border-radius: 5px;
+            margin: 0 5px;
+            color: white;
+        }
+        .findings {
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+        }
+        .finding {
+            border-left: 5px solid #dee2e6;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+        }
+        .critical {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .high {
+            background-color: #fd7e14;
+            border-color: #fd7e14;
+        }
+        .medium {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #333;
+        }
+        .low {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+        .info {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 0 0 5px 5px;
+            border: 1px solid #dee2e6;
+            border-top: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .remediation {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>InfoSentinel Professional Security Report</h1>
+            <p>Comprehensive security assessment for {{ target }}</p>
+        </div>
+        
+        <div class="report-meta">
+            <p><strong>Scan ID:</strong> {{ scan_id }}</p>
+            <p><strong>Target:</strong> {{ target }}</p>
+            <p><strong>Scan Type:</strong> {{ scan_type }}</p>
+            <p><strong>Start Time:</strong> {{ start_time.strftime('%Y-%m-%d %H:%M:%S UTC') }}</p>
+            <p><strong>End Time:</strong> {{ end_time.strftime('%Y-%m-%d %H:%M:%S UTC') }}</p>
+            <p><strong>Duration:</strong> {{ '%0.2f'|format(duration/60) }} minutes</p>
+            <p><strong>Status:</strong> {{ status }}</p>
+            <p><strong>Report Generated:</strong> {{ report_date.strftime('%Y-%m-%d %H:%M:%S UTC') }}</p>
+        </div>
+        
+        <div class="summary">
+            <h2>Executive Summary</h2>
+            <p>This report presents the findings of a security assessment conducted on {{ target }}. The assessment was performed using InfoSentinel's professional security scanning tools.</p>
+            
+            <div class="risk-score">
+                <h3>Overall Risk Score</h3>
+                {% if risk_score >= 75 %}
+                <div class="score-circle critical">{{ '%0.1f'|format(risk_score) }}</div>
+                <p>Critical Risk</p>
+                {% elif risk_score >= 50 %}
+                <div class="score-circle high">{{ '%0.1f'|format(risk_score) }}</div>
+                <p>High Risk</p>
+                {% elif risk_score >= 25 %}
+                <div class="score-circle medium">{{ '%0.1f'|format(risk_score) }}</div>
+                <p>Medium Risk</p>
+                {% elif risk_score > 0 %}
+                <div class="score-circle low">{{ '%0.1f'|format(risk_score) }}</div>
+                <p>Low Risk</p>
+                {% else %}
+                <div class="score-circle info">{{ '%0.1f'|format(risk_score) }}</div>
+                <p>No Risk Detected</p>
+                {% endif %}
+            </div>
+            
+            <h3>Vulnerability Distribution</h3>
+            <div class="severity-distribution">
+                <div class="severity-box critical">
+                    <h4>Critical</h4>
+                    <p>{{ severity_counts.critical }}</p>
+                </div>
+                <div class="severity-box high">
+                    <h4>High</h4>
+                    <p>{{ severity_counts.high }}</p>
+                </div>
+                <div class="severity-box medium">
+                    <h4>Medium</h4>
+                    <p>{{ severity_counts.medium }}</p>
+                </div>
+                <div class="severity-box low">
+                    <h4>Low</h4>
+                    <p>{{ severity_counts.low }}</p>
+                </div>
+                <div class="severity-box info">
+                    <h4>Info</h4>
+                    <p>{{ severity_counts.info }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="findings">
+            <h2>Detailed Findings</h2>
+            
+            {% for vuln_type, vulns in vuln_by_type.items() %}
+            <h3>{{ vuln_type|replace('_', ' ')|title }}</h3>
+            
+            {% for vuln in vulns %}
+            <div class="finding">
+                <h4>{{ vuln.description }}</h4>
+                
+                <table>
+                    <tr>
+                        <th>Severity</th>
+                        <td>
+                            {% if vuln.severity == 'critical' %}
+                            <span style="color: #dc3545; font-weight: bold;">Critical</span>
+                            {% elif vuln.severity == 'high' %}
+                            <span style="color: #fd7e14; font-weight: bold;">High</span>
+                            {% elif vuln.severity == 'medium' %}
+                            <span style="color: #ffc107; font-weight: bold;">Medium</span>
+                            {% elif vuln.severity == 'low' %}
+                            <span style="color: #17a2b8; font-weight: bold;">Low</span>
+                            {% else %}
+                            <span style="color: #6c757d; font-weight: bold;">Info</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% if vuln.url %}
+                    <tr>
+                        <th>URL</th>
+                        <td>{{ vuln.url }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if vuln.parameter %}
+                    <tr>
+                        <th>Parameter</th>
+                        <td>{{ vuln.parameter }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if vuln.payload %}
+                    <tr>
+                        <th>Payload</th>
+                        <td><code>{{ vuln.payload }}</code></td>
+                    </tr>
+                    {% endif %}
+                    {% if vuln.header %}
+                    <tr>
+                        <th>Header</th>
+                        <td>{{ vuln.header }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if vuln.data_type %}
+                    <tr>
+                        <th>Data Type</th>
+                        <td>{{ vuln.data_type }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+                
+                {% if vuln.remediation %}
+                <div class="remediation">
+                    <h5>Remediation</h5>
+                    <p>{{ vuln.remediation }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            {% endfor %}
+        </div>
+        
+        <div class="footer">
+            <p>This report was generated by InfoSentinel Professional Security Scanner.</p>
+            <p>&copy; {{ report_date.year }} InfoSentinel. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

